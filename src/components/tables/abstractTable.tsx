@@ -91,8 +91,7 @@ export function AbstractTable<TData>({ columns, data }: TableProps<TData>) {
 
   return (
     <div style={{ direction: table.options.columnResizeDirection }}>
-      <table className="w-full text-sm text-left text-gray-500  dark:text-gray-200 table-fixed" style ={{
-          width: table.getCenterTotalSize()}}>
+      <table style={{ width: '100%' }} className=" text-sm text-left text-gray-500  dark:text-gray-200 table-fixed mx-auto px-4" >
         <thead className="text-xs text-gray-700  bg-gray-50 dark:bg-teal-900 dark:text-gray-400">
           {table.getHeaderGroups().map((hg) => (
             <tr key={hg.id}>

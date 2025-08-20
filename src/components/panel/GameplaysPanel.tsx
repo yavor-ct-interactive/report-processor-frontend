@@ -21,7 +21,7 @@ export type GameplayCols = {
     jp: BigInteger;
     added_at: Date
 }
-const data_url = "https://45.128.98.95:8005/get-gameplay-data"
+const data_url = `${import.meta.env.VITE_BACKEND_URL}/get-gameplay-data`;
 
 
 export const GameplaysPanel:FC<PropsWithChildren> = ({children}) => {
@@ -129,7 +129,7 @@ export const GameplaysPanel:FC<PropsWithChildren> = ({children}) => {
     return (
         <div>
         
-      <div className="flex flex-col md:flex-row items-stretch md:items-center md:space-x-3 space-y-3 md:space-y-0 justify-between mx-4 py-4 border-t dark:border-gray-700">
+      <div className="flex h-screen flex-col md:flex-row items-stretch md:items-center md:space-x-3 space-y-3 md:space-y-0 justify-between mx-4 py-4 border-t dark:border-gray-700">
 
         {inProgress ? <ImSpinner9 className="loading-icon" /> : ""} 
           {gameplays.isSuccess ? 
