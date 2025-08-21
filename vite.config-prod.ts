@@ -10,6 +10,7 @@ export default defineConfig({
     allowedHosts: [
       "127.0.0.1:8001",
       "pegasus.ct-interactive.com",
+      "45.128.98.94",
     ],
      proxy: {
        "/backend": {
