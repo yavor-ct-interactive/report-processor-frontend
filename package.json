@@ -5,7 +5,8 @@
   "type": "module",
   "env": "stage",
   "scripts": {
-    "dev": "vite --host 127.0.0.1 ",
+    "dev": "vite --host 127.0.0.1 --config vite.config-dev.ts ",
+    "dev_prod": "vite --host 127.0.0.1 --config vite.config-prod.ts",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"

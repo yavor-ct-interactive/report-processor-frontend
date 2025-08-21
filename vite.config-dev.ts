@@ -11,7 +11,8 @@ export default defineConfig({
       "db.auto-scaling.shop",
       "45.128.98.95",
       "45.128.98.95:8006",
-      "127.0.0.1:8001"
+      "127.0.0.1:8001",
+      "auto-scaling.space"
     ],
      proxy: {
        "/backend": {
