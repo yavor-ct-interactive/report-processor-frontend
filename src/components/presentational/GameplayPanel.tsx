@@ -32,13 +32,20 @@ const data_url = "/backend/get-gameplay-data"
 const fetchData = async () => {
   //add parameters to fetch data 
   const formData = new FormData();
-  const now = new Date()
-  const oneMonthAgo = new Date()
   const formatWithTime = (date) => date.toISOString().replace("T", " ").slice(0, 19);
+  const datetimeSofia = () => {
+    const sofia_date = new Date(new Date().getTime())
+    return sofia_date
+  }
+  
+  const now = datetimeSofia()
+  const oneMonthAgo = datetimeSofia()
+  
   oneMonthAgo.setMonth(now.getMonth() - 1);
   formData.append("start_date", formatWithTime(oneMonthAgo));
   formData.append("end_date", formatWithTime(now));
-
+  console.log("Now date is ", now)
+  console.log("One month ago is",oneMonthAgo)
   const { data } = await axios.post(data_url, {
     headers: {
       "Content-Type": "multipart/form-data",
