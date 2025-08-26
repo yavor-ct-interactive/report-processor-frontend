@@ -22,20 +22,31 @@ export function DateTimePicker({ value, onChange, wrapperRef }: DateTimePickerPr
   const [selectedDate, setSelectedDate] = useState<Date>(initialDate);
   const [showPicker, setShowPicker] = useState(false);
   const [calendarMonth, setCalendarMonth] = useState<Date>(initialDate);
+  const calendarRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      console.log(wrapperRef)
-      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
-        setShowPicker(false); // close if clicked outside
+      console.log("Event is ", calendarRef.current)
+       if (
+        calendarRef.current &&
+        !calendarRef.current.contains(event.target as Node)  &&
+        inputRef.current &&
+        !inputRef.current.contains(event.target as Node)
+      ) {
+        setShowPicker(false);
       }
     }
 
     document.addEventListener("mousedown", handleClickOutside);
+
+
+    // Cleanup
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [showPicker]);
+
   useEffect( () => {
     selectedDate 
   })
@@ -57,6 +68,7 @@ export function DateTimePicker({ value, onChange, wrapperRef }: DateTimePickerPr
     <div className="relative w-64">
       {/* Input */}
       <input
+        ref={inputRef}
         type="text"
         readOnly
         className="w-full border rounded-lg p-2 cursor-pointer"
@@ -66,15 +78,14 @@ export function DateTimePicker({ value, onChange, wrapperRef }: DateTimePickerPr
 
       {/* Dropdown Picker */}
       {showPicker && (
-        <div className="absolute top-full left-0 mt-2 p-4 bg-white border rounded-lg shadow-lg z-10 dark:bg-teal-900"
-          ref={wrapperRef}>
+        <div ref={calendarRef} className="absolute top-full w-full left-0 mt-2 p-4 bg-white border rounded-lg shadow-lg z-10 dark:bg-teal-900"
+          >
           {/* Calendar */}
           <CalendarView
             currentDate={calendarMonth}
             onDateClick={handleDateClick}
             onMonthChange={setCalendarMonth}
-            selectedDate={selectedDate}
-
+            selectedDate={selectedDate}            
           />
 
           {/* Time Selector */}

@@ -2,6 +2,7 @@
 import dayjs from "dayjs";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "flowbite-react";
+import {useRef, useEffect, useState} from 'react';
 
 interface CalendarViewProps {
   currentDate: Date;
@@ -10,16 +11,17 @@ interface CalendarViewProps {
   onMonthChange: (newDate: Date) => void;
 }
 
-export function CalendarView({ currentDate, selectedDate, onDateClick, onMonthChange  }: CalendarViewProps) {
+export function CalendarView({ currentDate, selectedDate, onDateClick, onMonthChange }: CalendarViewProps) {
   const month = dayjs(currentDate);
   const daysInMonth = month.daysInMonth();
   const startDay = month.startOf("month").day();
+  const [isopen, setIsopen] = useState(0)
   const today = dayjs()
   const selected = dayjs(selectedDate)
-
   const weeks: (number | null)[][] = [];
   let week: (number | null)[] = [];
 
+  
   // Fill empty slots before first day
   for (let i = 0; i < startDay; i++) week.push(null);
 
@@ -32,10 +34,9 @@ export function CalendarView({ currentDate, selectedDate, onDateClick, onMonthCh
     }
   }
   if (week.length) weeks.push(week);
-  console.log("selected date", selected)
-  console.log("today date", today)
+
   return (
-    <div className="dark:text-slate-300">
+    <div className="dark:text-slate-300" >
         <div className="flex justify-between items-center mb-2">
             <div  onClick={ () => onMonthChange(month.subtract(1,"month").toDate())} 
                 className="p-1 rounded hover:bg-blue-200  dark:hover:bg-cyan-700 cursor-pointer">
