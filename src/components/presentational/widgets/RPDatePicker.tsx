@@ -12,16 +12,16 @@ import dayjs from "dayjs"; // For date formatting
 interface DateTimePickerProps {
   value?: Date;
   onChange?: (date: Date) => void;
+  start_date?: Date | undefined;
   wrapperRef?: React.RefCallback<HTMLInputElement> | React.RefObject<HTMLInputElement> | undefined;
 }
 
-export function DateTimePicker({ value, onChange, wrapperRef }: DateTimePickerProps) {
-  const initialDate = value || new Date();
+export function DateTimePicker({start_date, onChange, wrapperRef }: DateTimePickerProps) {
+  const initialDate = start_date;
 
-
-  const [selectedDate, setSelectedDate] = useState<Date>(initialDate);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(initialDate);
   const [showPicker, setShowPicker] = useState(false);
-  const [calendarMonth, setCalendarMonth] = useState<Date>(initialDate);
+  const [calendarMonth, setCalendarMonth] = useState<Date | undefined>(initialDate);
   const calendarRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -46,10 +46,15 @@ export function DateTimePicker({ value, onChange, wrapperRef }: DateTimePickerPr
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showPicker]);
-
   useEffect( () => {
-    selectedDate 
-  })
+     if (start_date && dayjs(start_date).isValid()) {
+      setSelectedDate(start_date);
+      setCalendarMonth(start_date); // optional: sync calendar view too
+     }
+    console.log("Initial date in datetime picker is",initialDate)
+  }, [initialDate])
+
+
   const handleDateClick = (day: number) => {
     const newDate = dayjs(selectedDate).date(day).toDate();
     setSelectedDate(newDate);

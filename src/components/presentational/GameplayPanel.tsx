@@ -12,8 +12,17 @@ import { RowSelection, createColumnHelper } from "@tanstack/react-table";
 import { DateTimePicker, RPDatePicker } from './widgets/RPDatePicker.tsx';
 import {RPSelect} from './SelectElement.tsx'
 import dayjs from "dayjs"; // For date formatting
+import isoWeek from 'dayjs/plugin/isoWeek';
+import { SummarizedWinnings } from '../tables/groupTable.tsx';
 
-
+interface SummarizedItems {
+    value: string;
+    count: number;
+}
+interface SummarizedWinningsProps {
+    criteria: string;
+    items: SummarizedItems[];
+}
 export type GameplayCols = {
     id: BigInteger;
     gameplay_id: BigInteger;
@@ -25,10 +34,18 @@ export type GameplayCols = {
     successful_operator_win_transaction_ammount: BigInteger;
     game_start_time: Date;
     jp: BigInteger;
-    added_at: Date
+    added_at: Date;
+    rgs_total_win: BigInteger;
+    game_denomination: BigInteger;
 }
 const data_url = "/backend/get-gameplay-data"
-
+const returnDataComponent = () => {
+  return (
+    <div>
+      {}
+    </div>
+  )
+}
 const fetchData = async () => {
   //add parameters to fetch data 
   const formData = new FormData();
@@ -63,80 +80,127 @@ export const GameplayPanel:FC<PropsWithChildren> = ({children}) => {
     const minusOneYear = new Date()
     minusOneYear.setDate(minusOneYear.getFullYear() - 1 );
 
-    const current_week = currentWeek()
 
     function currentDay(date = new Date()){
-      const today = new Date(date)
-      today.setHours(0); today.setMinutes(0); today.setSeconds(0)
-      return today
+      const startOfToday = dayjs().startOf('day'); // Today at 00:00:00
+      const now = dayjs(); // Current time
+      return {
+        start: startOfToday.toDate(),
+        end: now.toDate()
+      }
     }
-    function minus1Day(date = new Date()){
-      const d = new Date(date)
-      d.setHours(0); d.setMinutes(0); d.setSeconds(0)
-      d.setDate(d.getDate() - 1)
-      return d
+    function previousDay(date = new Date()){
+      const startOfToday = dayjs().startOf('day'); // Today at 00:00:00
+      const startOfYesterday = startOfToday.subtract(1, 'day'); // Yesterday at 00:00:00
+      return {
+        start: startOfYesterday.toDate(),
+        end: startOfToday.toDate(),
+      }
+
     }
     function currentWeek(date = new Date()) {
-      const d = new Date(date);
-      const day = d.getDay(); // 0 = Sunday, 1 = Monday, ...
-      const diff = d.getDate() - (day - 1) ; // subtract day index
-      let new_date = new Date(d.setDate(diff));
-      new_date.setHours(0); new_date.setMinutes(0); new_date.setSeconds(0)
-      return new_date
+      dayjs.extend(isoWeek); // Enables ISO week support (Monday as start)
+
+      const now = dayjs(); // Current time
+      const startOfWeek = now.startOf('isoWeek'); // Monday at 00:00:00
+      return {
+        start: startOfWeek.toDate(),
+        end: now.toDate()
+      }
+
     }
 
-    function previousWeek(date = new Date()){
+    function previousWeek(){
+      dayjs.extend(isoWeek);
+
+      // Get start and end of previous week
+      const startOfPreviousWeek = dayjs().startOf('isoWeek').subtract(1, 'week');
+      const endOfPreviousWeek = dayjs().startOf('isoWeek').subtract(1, 'day').endOf('day');
+      return {
+        start: startOfPreviousWeek.toDate(), 
+        end: endOfPreviousWeek.toDate()
+      }
 
     }
     function currentMonth(date = new Date()){
+      const startOfMonth = dayjs().startOf('month'); // e.g. 2025-08-01 00:00:00
+      const now = dayjs(); // current date and time
+
+      console.log('Start of month:', startOfMonth.format('YYYY-MM-DD HH:mm:ss'));
+      console.log('Now:', now.format('YYYY-MM-DD HH:mm:ss'));
+      return {
+        start: startOfMonth.toDate(),
+        end: now.toDate()
+      }
 
     }
     function previousMonth(date = new Date()){
-
+      const startOfCurrentMonth = dayjs().startOf('month'); // e.g. Sep 1, 2025
+      const startOfPreviousMonth = startOfCurrentMonth.subtract(1, 'month'); // e.g. Aug 1, 2025
+      return {
+        start: startOfPreviousMonth.toDate(),
+        end: startOfCurrentMonth.toDate()
+      }
     }
-
-    const [openModal, setOpenModal] = useState<string | undefined>();
-    const [period, setPeriod] = useState("currentday");
+    let {start,end} = currentDay()
+    const [openModal, setOpenModal] = useState(false);
+    const [period, setPeriod] = useState("current_day");
     const [groupby, setGroupby] = useState("operator")
     const [modalPlacement, setModalPlacement] = useState<string>('center');
     const [inProgress, setInProgress] = useState<Boolean | undefined>(false)
     const queryClient = useQueryClient()
     const [data, setData] = useState<GameplayCols[]>();
-    const [startDate, setStartDate] = useState<Date>(currentDay())
-    const [endDate, setEndDate] = useState<Date>(new Date())
-    const startDateRef = useRef<HTMLInputElement>(null);
+    const [startDate, setStartDate] = useState<Date>(start)
+    const [endDate, setEndDate] = useState<Date>(end)
+    const [groupedData, setGroupedData] = useState<any>()
     
+    useEffect( () => {
+      console.log("Grouped data is ",groupedData)
+    }, [groupedData])
 
   const changePeriod = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
+    setPeriod(value)
     console.log("Selected period:", value);
-    if (e.target.value == "currentday"){
-      setStartDate(currentDay())
-      setEndDate(new Date())
+    if (e.target.value == "current_day"){
+      let {start, end} = currentDay()
+      setStartDate(start)
+      setEndDate(end)
     }
-    if (e.target.value == "minus1day"){
-      setStartDate(minus1Day())
-      console.log(minus1Day())
+    if (e.target.value == "previous_day"){
+      let {start, end} = previousDay()
+      setStartDate(start)
+      setEndDate(end)
   
     }
-    if (e.target.value == "from_start_till_today"){
-      setStartDate(currentWeek())
-      console.log(startDate)
+    if (e.target.value == "current_week"){
+      let {start, end} = currentWeek()
+      setStartDate(start)
+      setEndDate(end)
+    }
+    if (e.target.value == "previous_week"){
+      let {start, end} = previousWeek()
+      setStartDate(start)
+      setEndDate(end)
+    }
+    if (e.target.value == "current_month"){
+      let {start, end} = currentMonth()
+      setStartDate(start)
+      setEndDate(end)
+    }
+    if (e.target.value == "previous_month"){
+      let {start, end} = previousMonth()
+      setStartDate(start)
+      setEndDate(end)
     }
 
+
   };
+  
 
     const columnHelper = createColumnHelper<GameplayCols>();
-    useEffect(() => {
-      console.log("Period is ", period)
-      console.log("start date is ", startDate)
-    }, [period]);
-    useEffect(() => {
-      console.log(groupby)
-    }, [groupby]);
-    useEffect(() => {
-      console.log(data_url)      
-    }, []);
+
+    
 
     const gameplays = useQuery({
       queryKey: ['gameplays'],
@@ -174,6 +238,20 @@ export const GameplayPanel:FC<PropsWithChildren> = ({children}) => {
           cell: (info) => info.getValue()
 
         }),
+        columnHelper.accessor("rgs_total_win", {
+          header: "RGS Total Win",
+          cell: (info) => info.getValue(),
+          size:70,
+          minSize: 50, 
+          maxSize: 100,
+        }), 
+        columnHelper.accessor("game_denomination", {
+          header: "Game Den.",
+          cell: (info) => info.getValue(),
+          size:50,
+          minSize: 50, 
+          maxSize: 100,
+        }), 
         columnHelper.accessor("currency", {
           header: "Currency",
           cell: (info) => info.getValue(),
@@ -200,12 +278,12 @@ export const GameplayPanel:FC<PropsWithChildren> = ({children}) => {
         }),             
       ]
     const period_select_options = [ 
-      {value:"currentday", name: "Current Day", selected: true},
-      {value:"minus1day", name: "Yesterday"},
-      {value:"from_start_till_today", name: "Current week"},
-      {value:"from_start_till_end_of_prev_week", name: "Previous week"},
-      {value:"from_start_of_cur_month_till_today", name: "Current month"},
-      {value:"from_start_of_prev_month_till_its_end", name: "Previous month"},
+      {value:"current_day", name: "Current Day", selected: true}, //From 0 till now
+      {value:"previous_day", name: "Yesterday"}, //From 0 to  0 
+      {value:"current_week", name: "Current week"}, //from start of the week till now 
+      {value:"previous_week", name: "Previous week"}, // from start of the previous week till its end
+      {value:"current_month", name: "Current month"}, // from start of the month till now
+      {value:"previous_month", name: "Previous month"}, // from start of the previous month till it's end
     ]
     const group_by_options = [
       { value: "operator", name: "Operator", selected: true},
@@ -222,21 +300,40 @@ export const GameplayPanel:FC<PropsWithChildren> = ({children}) => {
                 <RPSelect name="period-select" onChange={changePeriod} options={period_select_options} label="Period" />
               <div className="flex flex-row items-center gap-2">
                 <div>Start Date</div>
-                <DateTimePicker value ={startDate} onChange={(e) => setStartDate(e)} />
+                <DateTimePicker start_date ={startDate} onChange={(e) => setStartDate(e)} />
               </div>
               <div className="flex flex-row items-center gap-2">
                 <div>End Date</div>
-                <DateTimePicker value={endDate} onChange={(e) => setEndDate(e)}/>
+                <DateTimePicker start_date={endDate} onChange={(e) => setEndDate(e)}/>
               </div>
                 <RPSelect name="action-select" onChange={(e)=>setGroupby(e.target.value)} options = {group_by_options} label="GroupBy" />
                 <Button className="bg-slate-300 text-dark dark:bg-white"
                   onClick={(e) => {
-                    console.log("start date",startDate); 
-                    console.log("end date",endDate); 
-                    console.log("period", period); 
+                    let formatted_start_date = dayjs(startDate).format('YYYY-MM-DD HH:mm:ss');
+                    let formatted_end_date = dayjs(endDate).format('YYYY-MM-DD HH:mm:ss');
+                    console.log("start date", dayjs(startDate).format('YYYY-MM-DD HH:mm:ss')); 
+                    console.log("end date",dayjs(endDate).format('YYYY-MM-DD HH:mm:ss')); 
                     console.log("group_by", groupby)
-                    alert("В процес на разработка")
-                    
+                    let headers = {
+                      "Content-Type":"application/x-www-form-urlencoded",
+                    }
+                    const formData = new FormData();
+                    formData.append("start_date", formatted_start_date);
+                    formData.append("end_date", formatted_end_date);
+                    formData.append("criteria", groupby);
+
+                    axios.post("/backend/summarize-winnings",formData, {
+                      headers: headers
+                    }).then( 
+                      (res:any) => {
+                        setGroupedData(res.data)
+                        setOpenModal(true)
+                      }
+                        
+                    ).catch( 
+                      (err) => console.log(err)
+                    )
+                                          
                   }
                     }>
                     Submit
@@ -250,29 +347,21 @@ export const GameplayPanel:FC<PropsWithChildren> = ({children}) => {
             />: ''
             }
             </div>
+            <div>
+              <Modal show={openModal} size="3xl" popup onClose={() => setOpenModal(false)} position="center" >
+                              <ModalHeader><div className="text-blue-700 text-center"> Operator </div></ModalHeader>
+                              <ModalBody>
+                                   {groupedData && 
+                                    <SummarizedWinnings criteria={groupedData.criteria} items={groupedData.items} 
+                                        queryFunction={() => alert('Hopa')} /> 
+                                    }  
+                              </ModalBody>
+                          </Modal>
+             
+            </div>
+
         </div>
-          <Modal show={openModal} onClose={() => setOpenModal(false)}>
-            <ModalHeader>Terms of Service</ModalHeader>
-            <ModalBody>
-              <div className="space-y-6">
-                <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                  With less than a month to go before the European Union enacts new consumer privacy laws for its citizens,
-                  companies around the world are updating their terms of service agreements to comply.
-                </p>
-                <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                  The European Union’s General Data Protection Regulation (G.D.P.R.) goes into effect on May 25 and is meant
-                  to ensure a common set of data rights in the European Union. It requires organizations to notify users as
-                  soon as possible of high-risk data breaches that could personally affect them.
-                </p>
-              </div>
-            </ModalBody>
-            <ModalFooter>
-              <Button onClick={() => setOpenModal(false)}>I accept</Button>
-              <Button color="alternative" onClick={() => setOpenModal(false)}>
-                Decline
-              </Button>
-            </ModalFooter>
-          </Modal>
+          
         </div>
     )
 }

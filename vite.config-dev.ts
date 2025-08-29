@@ -12,7 +12,8 @@ export default defineConfig({
       "45.128.98.95",
       "45.128.98.95:8006",
       "127.0.0.1:8001",
-      "auto-scaling.space"
+      "auto-scaling.space",
+      "127.0.0.1:5783"
     ],
      proxy: {
        "/backend": {
@@ -20,6 +21,12 @@ export default defineConfig({
          changeOrigin: true,
          secure: false, 
          rewrite: (path) => path.replace(/^\/backend/, ''),
+       },
+       "/bpbi": {
+         target: "http://127.0.0.1:5873",
+         changeOrigin: true,
+         secure: false, 
+         rewrite: (path) => path.replace(/^\/bpbi/, ''),
        }
      }
   }
