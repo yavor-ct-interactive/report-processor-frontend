@@ -14,6 +14,7 @@ import {RPSelect} from './SelectElement.tsx'
 import dayjs from "dayjs"; // For date formatting
 import isoWeek from 'dayjs/plugin/isoWeek';
 import { SummarizedWinnings, SummarizedWinningsComponent } from '../tables/groupTable.tsx';
+import { CustomModalTheme } from '../../themes/MainTheme.tsx';
 
 interface SummarizedItems {
     value: string;
@@ -359,9 +360,8 @@ export const GameplayPanel:FC<PropsWithChildren> = ({children}) => {
               <div className="flex flex-row items-center gap-2">
                 <div>End Date</div>
                 <DateTimePicker start_date={endDate} onChange={(e) => setEndDate(e)}/>
-              </div>
-              
-                <Button className="bg-red-500 hover:bg-red-600"  disabled={selectGroupByWinningCriteriaDisabled()}
+              </div>           
+                <Button className="bg-red-500 text-gray-700 dark:text-white hover:bg-red-600"  disabled={selectGroupByWinningCriteriaDisabled()}
                   onClick={(e) => {
                     setOpenModal(true)
                   }}>
@@ -377,7 +377,7 @@ export const GameplayPanel:FC<PropsWithChildren> = ({children}) => {
             }
             </div>
             <div>
-              <ThemeProvider theme={modalTheme}>
+              <ThemeProvider theme={CustomModalTheme}>
               <Modal show={openModal} size="5xl" popup onClose={() => setOpenModal(false)} position="center" >
                   <ModalHeader>Winnings</ModalHeader>
                   <ModalBody>
