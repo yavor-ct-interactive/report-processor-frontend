@@ -17,11 +17,10 @@ interface DateTimePickerProps {
 }
 
 export function DateTimePicker({start_date, onChange, wrapperRef }: DateTimePickerProps) {
-  const initialDate = start_date;
 
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(initialDate);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(start_date);
   const [showPicker, setShowPicker] = useState(false);
-  const [calendarMonth, setCalendarMonth] = useState<Date | undefined>(initialDate);
+  const [calendarMonth, setCalendarMonth] = useState<Date | undefined>(start_date);
   const calendarRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -51,12 +50,14 @@ export function DateTimePicker({start_date, onChange, wrapperRef }: DateTimePick
       setSelectedDate(start_date);
       setCalendarMonth(start_date); // optional: sync calendar view too
      }
-    console.log("Initial date in datetime picker is",initialDate)
-  }, [initialDate])
+    console.log("Initial date in datetime picker is",start_date)
+  }, [start_date])
 
 
   const handleDateClick = (day: number) => {
-    const newDate = dayjs(selectedDate).date(day).toDate();
+    console.log("HandleClick",selectedDate)
+    const base = dayjs(calendarMonth ?? new Date());
+    const newDate = base.date(day).toDate();
     setSelectedDate(newDate);
     onChange?.(newDate);
     setShowPicker(false);
@@ -68,9 +69,13 @@ export function DateTimePicker({start_date, onChange, wrapperRef }: DateTimePick
     setSelectedDate(newDate);
     onChange?.(newDate);
   };
+  const handleCalendarChange = () => {
+    console.log(calendarMonth)
+    setCalendarMonth
+  }
 
   return (
-    <div className="relative w-64">
+    <div className="relative w-64 z-50">
       {/* Input */}
       <input
         ref={inputRef}

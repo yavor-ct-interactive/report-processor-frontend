@@ -11,6 +11,10 @@ import { MdAccountBalance } from "react-icons/md";
 import { SysinfoPanel } from './components/presentational/SystemPanel';
 import { useLocation } from 'react-router-dom';
 import { PromosPanel } from './components/presentational/PromosPanel';
+import { GrSystem } from "react-icons/gr";
+import { MdOutlineCampaign } from "react-icons/md";
+
+
 
 
 
@@ -20,7 +24,7 @@ function App() {
   const validPaths = ["/gameplay-stats", "/system-info", "/promos"];
   const showWrapper = validPaths.includes(location.pathname);
   return (
-    <section className="bg-gray-50 dark:bg-black w-screen min-h-screen dark:text-gray-200 w-full "> 
+    <section className="bg-gray-50 h-screen dark:bg-black w-screen min-h-screen dark:text-gray-200 w-full "> 
       <div className="" >
         
         <nav className="relative sm:rounded-lg overflow-x-hidden mb-2 mx-4 w-11/12">
@@ -33,11 +37,11 @@ function App() {
               </div>
               </Link>
             </li>
-            {/*
+            
             <li className="flex hover:bg-gray-100 dark:hover:bg-teal-900 hover:bg-gray-100 dark:hover:bg-gray-700">
               <Link to="/system-info" className="flex flex-row gap-4 items-center justify-between px-2" >
                 <div className="flex flex-row gap-1 items-center hover:text-teal-500 hover:dark:text-teal-500 justify-between text-black dark:text-white">
-                  <div><ImStatsDots /></div> 
+                  <div><GrSystem /></div> 
                   <div className=''>SysInfo</div>
                 </div>
               </Link>
@@ -45,22 +49,22 @@ function App() {
             <li className="flex hover:bg-gray-100 dark:hover:bg-teal-900 hover:bg-gray-100 dark:hover:bg-gray-700">
               <Link to="/promos" className="flex flex-row gap-4 items-center justify-between px-2" >
                 <div className="flex flex-row gap-1 items-center hover:text-teal-500 hover:dark:text-teal-500 justify-between text-black dark:text-white">
-                  <div><ImStatsDots /></div> 
+                  <div><MdOutlineCampaign size="25" /></div> 
                   <div className=''>Promos</div>
                 </div>
               </Link>
             </li>
-            */}
+            
           </ul>
         </nav>
         {showWrapper && (
-        <div className="bg-white dark:bg-gray-800 relative shadow-md rounded-lg overflow-hidden p-3 mx-4">
-          <Routes> 
-            <Route path="/gameplay-stats" element={<GameplayPanel />} />
-            <Route path="/system-info" element={<SysinfoPanel />} />
-            <Route path="/promos" element = {<PromosPanel />} />
-          </Routes>
-        </div>
+        <div className="bg-white border h-dvh min-h-dvh dark:bg-gray-800 relative overflow-auto p-3 mx-4"> 
+            <Routes> 
+              <Route path="/gameplay-stats" element={<GameplayPanel />} />
+              <Route path="/system-info" element={<SysinfoPanel />} />
+              <Route path="/promos" element = {<PromosPanel />} />
+            </Routes>
+          </div>
         )}
       </div>
     </section>

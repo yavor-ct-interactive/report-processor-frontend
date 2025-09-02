@@ -71,11 +71,13 @@ export const PromosPanel:FC<PropsWithChildren> = ({children}) => {
         setOpenModal(true)
     }
     const newHandler = () =>{
+      setEditRecord(null)
         let headers = {
             "Content-Type": "application/json",
         }
         setNewRecord(true)
         setOpenModal(true)
+        promos.refetch()
     }
 
     const columnHelper = createColumnHelper<PromosCols>();

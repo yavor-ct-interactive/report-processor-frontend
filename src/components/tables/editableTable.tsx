@@ -126,9 +126,9 @@ export function EditableTable<TData>({ columns, data, editButtonMethod, newButto
   return (
     <div style={{ direction: table.options.columnResizeDirection }}>
         <div className="flex flex-row gap-4">
-            <Button color="alternative" onClick={() => editButtonMethod(table.getSelectedRowModel().rows)}><div className="flex flex-row gap-2">
+            <Button color="alternative" onClick={() => editButtonMethod(table.getSelectedRowModel().rows)}><div className="flex flex-row gap-2 items-center">
                 <FaEdit /><div>Edit</div></div></Button>
-            <Button color="alternative" onClick={() => newButtonMethod()}><div className="flex flex-row gap-2">
+            <Button color="alternative" onClick={() => {table.resetRowSelection(); return (newButtonMethod())}}><div className="flex flex-row gap-2 items-center">
                 <IoAddCircleOutline /> <div>New</div></div></Button>
         </div>
       <table style={{ width: '100%' }} className=" text-sm text-left text-gray-500  dark:text-gray-200 table-fixed mx-auto px-4" >
