@@ -75,7 +75,7 @@ export function DateTimePicker({start_date, onChange, wrapperRef }: DateTimePick
   }
 
   return (
-    <div className="relative w-64 z-50">
+    <div className="relative w-64">
       {/* Input */}
       <input
         ref={inputRef}
@@ -88,14 +88,14 @@ export function DateTimePicker({start_date, onChange, wrapperRef }: DateTimePick
 
       {/* Dropdown Picker */}
       {showPicker && (
-        <div ref={calendarRef} className="absolute top-full w-full left-0 mt-2 p-4 bg-white border rounded-lg shadow-lg z-10 dark:bg-teal-900"
+        <div ref={calendarRef} className="absolute top-full w-full left-0 mt-2 z-99 p-4 bg-white border rounded-lg shadow-lg dark:bg-teal-900"
           >
           {/* Calendar */}
           <CalendarView
             currentDate={calendarMonth}
             onDateClick={handleDateClick}
             onMonthChange={setCalendarMonth}
-            selectedDate={selectedDate}            
+            selectedDate={selectedDate}       
           />
 
           {/* Time Selector */}

@@ -15,7 +15,11 @@ import dayjs from "dayjs"; // For date formatting
 import { PromosForm } from '../Forms/PromosForm.tsx';
 import { NewPromosForm } from '../Forms/NewPromoForm.tsx';
 
-
+const fetchPromoData = async ({pageIndex, pageSize}:any) => {
+  //add parameters to fetch data 
+  const { data } = await axios.get(`${data_url}?page=${pageIndex +1}&per_page=${pageSize}`)
+  return data
+}
 
 export type PromosCols = {
     id: BigInteger;
@@ -59,6 +63,8 @@ export const PromosPanel:FC<PropsWithChildren> = ({children}) => {
     const [editError, setEditError] = useState(false);
     const [editPromoModal, setEditPromoModal] = useState<String | undefined>()
     const [newRecord, setNewRecord] = useState(false)
+    const [pageIndex, setPageIndex] = useState(0)
+    const [pageSize, setPageSize] = useState(100)
     
 
     const editHandler = (rec:any) => {
@@ -77,20 +83,27 @@ export const PromosPanel:FC<PropsWithChildren> = ({children}) => {
         }
         setNewRecord(true)
         setOpenModal(true)
-        promos.refetch()
     }
 
     const columnHelper = createColumnHelper<PromosCols>();
 
+  const nextPage = () => setPageIndex((old) => old + 1);
+  const prevPage = () => setPageIndex((old) => Math.max(old - 1, 0));
 
-    const promos = useQuery({
-      queryKey: ['promos'],
-      queryFn: () => fetchData(),
-      refetchInterval: 30000,
-      refetchOnWindowFocus: true,
+  const promos = useQuery({
+      queryKey: ["promos", pageIndex, pageSize],
+      queryFn: () =>
+        fetchPromoData({
+          pageIndex: pageIndex,
+          pageSize: pageSize,
+        }),
+      enabled: pageSize > 0,
+      keepPreviousData: true,
       throwOnError: (error) => error.response?.status >= 500,
 
-    })
+    });
+   
+    
     const columns = [
         columnHelper.accessor('select', {
             header: "Select",
@@ -203,19 +216,27 @@ export const PromosPanel:FC<PropsWithChildren> = ({children}) => {
             <div>
             {promos.isError ? <div>An error occured</div> : ''}
             {promos.isSuccess ? 
-            <EditableTable                            
-                            data={promos.data}
+            <EditableTable
+                            data = {promos.data}                            
                             columns = {columns}
                             editButtonMethod = { editHandler }
                             newButtonMethod = { newHandler }
+                            pageIndex={pageIndex}
+                            pageSize={pageSize}
+                            setPageIndex={setPageIndex}
+                            setPageSize={setPageSize}
+                            nextPage={nextPage}
+                            prevPage={prevPage}                            
             />: ''
             }
             </div>
-            <Modal show={openModal} size="3xl" popup onClose={() => setOpenModal(false)} position="center" >
+            <Modal show={openModal} size="7xl" popup onClose={() => setOpenModal(false)} position="center" >
                 <ModalHeader><div className="text-blue-700 text-center"> {editRecord ? 'Edit Promo' : 'Add Promo'} </div></ModalHeader>
                 <ModalBody>
+                  <div className="h-dvh">
                     {editRecord && <PromosForm form_data={editRecord}  onClose={() => setOpenModal(false)} />}
                     {newRecord && <NewPromosForm onClose={() => setOpenModal(false)}  /> }    
+                  </div>
                 </ModalBody>
             </Modal>
         </div>

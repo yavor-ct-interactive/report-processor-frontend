@@ -14,6 +14,13 @@ import type { GameplayCols } from '../presentational/GameplayPanel';
 type TableProps<TData> = {
     data: TData[];
     columns: GroupColumnDef<TData>[];
+    pageIndex: number;
+    pageSize: number;
+    setPageIndex: React.Dispatch<React.SetStateAction<number>>;
+    setPageSize: React.Dispatch<React.SetStateAction<number>>;
+    nextPage: () => void,
+    prevPage: () => void,
+    totalCount: number,
 };
 export function Searchbar({
     value: initialValue,
@@ -54,16 +61,16 @@ function Filter({ column }: { column: Column<GameplayCols, unknown> }) {
       />
     );
   }
-export function AbstractTable<TData>({ columns, data }: TableProps<TData>) {
+  
+export function AbstractTable<TData>({ columns, data, pageIndex, pageSize, setPageIndex, setPageSize, nextPage, prevPage }: TableProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 100 });
   const [globalFilter, setGlobalFilter] = useState('');
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnResizeMode, setColumnResizeMode] = React.useState<ColumnResizeMode>("onChange");
   const [columnResizeDirection, setColumnResizeDirection] = React.useState<ColumnResizeDirection>("ltr");
 
   const table = useReactTable({
-    data,
+    data: data?.items ?? [],
     columns,
     enableColumnResizing: true,
     debugTable: true,
@@ -71,13 +78,18 @@ export function AbstractTable<TData>({ columns, data }: TableProps<TData>) {
     debugColumns: true,
     state: {
       sorting,
-      pagination,
+      pagination: { pageIndex, pageSize },
       globalFilter,
       columnFilters,
     },
     columnResizeMode: 'onChange',
+    manualPagination: true,
+    pageCount: Math.ceil(data?.total / pageSize),
     onSortingChange: setSorting,
-    onPaginationChange: setPagination,
+    onPaginationChange: (updater) =>
+      typeof updater === "function"
+        ? setPageIndex((old) => updater({ pageIndex: old, pageSize }).pageIndex)
+        : setPageIndex(updater.pageIndex),
     onGlobalFilterChange: setGlobalFilter,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -89,6 +101,7 @@ export function AbstractTable<TData>({ columns, data }: TableProps<TData>) {
     getExpandedRowModel: getExpandedRowModel(),
   });
 
+    console.log("Page Index is :",pageIndex)
   return (
     <div style={{ direction: table.options.columnResizeDirection }}>
       <table style={{ width: '100%' }} className=" text-sm text-left text-gray-500  dark:text-gray-200 table-fixed mx-auto px-4" >
@@ -132,17 +145,33 @@ export function AbstractTable<TData>({ columns, data }: TableProps<TData>) {
       </table>
       {/* Pagination Controls */}
       <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', justifyContent: 'center' }}>
-        <button onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
-          Previous
+         <button
+          onClick={() => table.setPageIndex(0)}
+          disabled={!table.getCanPreviousPage()}
+        >
+          {"<<"}
+        </button>
+        <button
+          onClick={() => prevPage()}
+          disabled={!table.getCanPreviousPage()}
+        >
+          {"<"}
         </button>
         <span>
-          Page{' '}
-          <strong>
-            {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
-          </strong>
+          Page <strong>{pageIndex + 1}</strong> of{" "}
+          {table.getPageCount()}
         </span>
-        <button onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-          Next
+        <button
+          onClick={() => nextPage()}
+          disabled={!table.getCanNextPage()}
+        >
+          {">"}
+        </button>
+        <button
+          onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+          disabled={!table.getCanNextPage()}
+        >
+          {">>"}
         </button>
       </div>
     </div>

@@ -8,7 +8,7 @@ import { GameplayPanel } from './components/presentational/GameplayPanel';
 import { MdRocketLaunch } from 'react-icons/md';
 import { ImStatsDots } from "react-icons/im";
 import { MdAccountBalance } from "react-icons/md";
-import { SysinfoPanel } from './components/presentational/SystemPanel';
+import { SysinfoPanel } from './components/presentational/Sysinfo/SystemPanel';
 import { useLocation } from 'react-router-dom';
 import { PromosPanel } from './components/presentational/PromosPanel';
 import { GrSystem } from "react-icons/gr";
@@ -25,7 +25,7 @@ function App() {
   const showWrapper = validPaths.includes(location.pathname);
   return (
     <section className="bg-gray-50 h-screen dark:bg-black w-screen min-h-screen dark:text-gray-200 w-full "> 
-      <div className="" >
+      <div className="border" >
         
         <nav className="relative sm:rounded-lg overflow-x-hidden mb-2 mx-4 w-11/12">
           <ul className="flex items-center justify-center text-gray-900  gap-2 p-2">
@@ -38,7 +38,7 @@ function App() {
               </Link>
             </li>
             
-            <li className="flex hover:bg-gray-100 dark:hover:bg-teal-900 hover:bg-gray-100 dark:hover:bg-gray-700">
+           {/* <li className="flex hover:bg-gray-100 dark:hover:bg-teal-900 hover:bg-gray-100 dark:hover:bg-gray-700">
               <Link to="/system-info" className="flex flex-row gap-4 items-center justify-between px-2" >
                 <div className="flex flex-row gap-1 items-center hover:text-teal-500 hover:dark:text-teal-500 justify-between text-black dark:text-white">
                   <div><GrSystem /></div> 
@@ -54,11 +54,11 @@ function App() {
                 </div>
               </Link>
             </li>
-            
+          */}            
           </ul>
         </nav>
         {showWrapper && (
-        <div className="bg-white border h-dvh min-h-dvh dark:bg-gray-800 relative overflow-auto p-3 mx-4"> 
+        <div className="bg-white border h-dvh min-h-dvh dark:bg-gray-800 relative overflow-auto p-3 mx-4 mb-5"> 
             <Routes> 
               <Route path="/gameplay-stats" element={<GameplayPanel />} />
               <Route path="/system-info" element={<SysinfoPanel />} />
