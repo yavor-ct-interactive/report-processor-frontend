@@ -40,7 +40,7 @@ const returnDataComponent = () => {
 
 export const GameplayPanel:FC<PropsWithChildren> = ({children}) => {
     const [pageIndex, setPageIndex] = useState(0)
-    const [pageSize, setPageSize] = useState(100)
+    const [pageSize, setPageSize] = useState(500)
     const nextPage = () => {
       console.log(pageIndex) 
       return setPageIndex((old) => old + 1);
