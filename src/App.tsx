@@ -13,15 +13,14 @@ import { useLocation } from 'react-router-dom';
 import { PromosPanel } from './components/presentational/PromosPanel';
 import { GrSystem } from "react-icons/gr";
 import { MdOutlineCampaign } from "react-icons/md";
-
-
+import {EndpointsLogsPanel} from './components/presentational/EndpointsLogsPanel';
 
 
 
 function App() {
   const [count, setCount] = useState(0)
   const location = useLocation();
-  const validPaths = ["/gameplay-stats", "/system-info", "/promos"];
+  const validPaths = ["/gameplay-stats", "/system-info", "/promos", "/endpoints-logs"];
   const showWrapper = validPaths.includes(location.pathname);
   return (
     <section className="bg-gray-50 h-screen dark:bg-black w-screen min-h-screen dark:text-gray-200 w-full "> 
@@ -37,7 +36,6 @@ function App() {
               </div>
               </Link>
             </li>
-            
            {/* <li className="flex hover:bg-gray-100 dark:hover:bg-teal-900 hover:bg-gray-100 dark:hover:bg-gray-700">
               <Link to="/system-info" className="flex flex-row gap-4 items-center justify-between px-2" >
                 <div className="flex flex-row gap-1 items-center hover:text-teal-500 hover:dark:text-teal-500 justify-between text-black dark:text-white">
@@ -63,6 +61,7 @@ function App() {
               <Route path="/gameplay-stats" element={<GameplayPanel />} />
               <Route path="/system-info" element={<SysinfoPanel />} />
               <Route path="/promos" element = {<PromosPanel />} />
+              <Route path="/endpoints-logs" element = {<EndpointsLogsPanel />} />
             </Routes>
           </div>
         )}
