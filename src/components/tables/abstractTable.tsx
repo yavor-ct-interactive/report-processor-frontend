@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import type { ColumnFiltersState, SortingState, ColumnResizeMode, ColumnResizeDirection, GroupColumnDef} from "@tanstack/react-table"
 import { flexRender, useReactTable } from '@tanstack/react-table';
+import type{ Column } from '@tanstack/react-table';
+
 import {
   getCoreRowModel,
   getSortedRowModel,
@@ -9,7 +11,8 @@ import {
   getGroupedRowModel,
   getExpandedRowModel,
 } from '@tanstack/react-table';
-import type { GameplayCols } from '../presentational/GameplayPanel';
+
+import type {GameplayCols} from '../presentational/Gameplays'
 
 type TableProps<TData> = {
     data: TData[];
@@ -22,7 +25,7 @@ type TableProps<TData> = {
     prevPage: () => void,
     totalCount: number,
 };
-export function Searchbar({
+/*export function Searchbar({
     value: initialValue,
     onChange,
     ...props
@@ -47,6 +50,7 @@ export function Searchbar({
       />
     );
   }
+  
 function Filter({ column }: { column: Column<GameplayCols, unknown> }) {
     const columnFilterValue = column.getFilterValue();
 
@@ -61,7 +65,22 @@ function Filter({ column }: { column: Column<GameplayCols, unknown> }) {
       />
     );
   }
-  
+*/
+interface FilterProps {
+  column: Column<GameplayCols, unknown>;
+}
+const Filter: React.FC<FilterProps> = ({ column }) => {
+  const columnFilterValue = column.getFilterValue();
+
+  return (
+    <input
+      type="text"
+      value={(columnFilterValue ?? '') as string}
+      onChange={(e) => column.setFilterValue(e.target.value)}
+      placeholder={`Search...`}
+    />
+  );
+};  
 export function AbstractTable<TData>({ columns, data, pageIndex, pageSize, setPageIndex, setPageSize, nextPage, prevPage }: TableProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
@@ -101,7 +120,7 @@ export function AbstractTable<TData>({ columns, data, pageIndex, pageSize, setPa
     getExpandedRowModel: getExpandedRowModel(),
   });
 
-    console.log("Page Index is :",pageIndex)
+    console.log("Page Index is :",pageSize)
   return (
     <div style={{ direction: table.options.columnResizeDirection }}>
       <table style={{ width: '100%' }} className=" text-sm text-left text-gray-500  dark:text-gray-200 table-fixed mx-auto px-4" >
@@ -111,7 +130,7 @@ export function AbstractTable<TData>({ columns, data, pageIndex, pageSize, setPa
               {hg.headers.map((header) => (
                 
                 <th key={header.id} colSpan={header.colSpan} style={{ width: header.getSize() }} className="text-center align-middle">
-                  {header.column.getCanFilter() && header.id !== "id" && header.id !== "select" && (
+                  {header.column.getCanFilter() && header.id !== "id" && header.id !== "select" &&(
                     <div>
                       <Filter column={header.column} />
                       {/*Add your search component here */}

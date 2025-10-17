@@ -86,35 +86,52 @@ export const EndpointsLogsPanel:FC<PropsWithChildren<{}>> = ({children}) => {
           header: "endpoint",
           aggregationFn: "count",
           cell: (info) => info.getValue(),
+          size: 100,
+          minSize: 100, 
+          maxSize: 100
         }),
         columnHelper.accessor("unique_identifier", {
           header: "Unique identifier",
           aggregationFn: "count",
           cell: (info) => info.getValue(),
+          size: 50,
+          minSize: 70, 
+          maxSize: 75
         }),
         columnHelper.accessor("status_code", {
           header: "Status Code",
           //render the Genres component here:
           cell: (info) => info.getValue() ,
+          size: 30, 
+          minSize: 30, 
+          maxSize:30
         }),
         columnHelper.accessor("error_message", {
           header: "Error Message",
-          //use our convertToHoursAndMinutes function to render the runtime of the show
+          //use our convertTsoHoursAndMinutes function to render the runtime of the show
           cell: (info) => info.getValue()
 
         }),
         columnHelper.accessor("result", {
           header: "Result",
           cell: (info) => info.getValue(),
-
+          size:70,
+          minSize:70,
+          maxSize:100
         }), 
         columnHelper.accessor("started_at", {
           header: "Started At",
           cell: (info) => info.getValue(),
+          size: 100,
+          minSize:100,
+          maxSize: 100
         }),   
         columnHelper.accessor("ended_at", {
           header: "Ended At",
           cell: (info) => info.getValue(),
+          size: 100,
+          minSize: 100,
+          maxSize: 100,
         }),                    
       ]
     

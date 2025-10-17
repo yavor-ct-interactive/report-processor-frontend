@@ -2,7 +2,7 @@ import {createColumnHelper } from "@tanstack/react-table"
 
 export type GameplayCols = {
     id: BigInteger;
-    gameplay_id: BigInteger;
+    gameplay_id: number;
     operator: String;
     operator_endpoint: String;
     operator_player_id: String;
@@ -29,6 +29,10 @@ export const gameplay_columns = [
         columnHelper.accessor("gameplay_id", {
           header: "Gameplay Id",
           aggregationFn: "count",
+          filterFn: (row, columnId, filterValue) => {
+          const rowValue = String(row.getValue(columnId));
+          return rowValue.includes(String(filterValue));
+    },
           cell: (info) => info.getValue(),
         }),
         columnHelper.accessor("operator", {
@@ -43,12 +47,20 @@ export const gameplay_columns = [
         }),
         columnHelper.accessor("operator_player_id", {
           header: "Operator Player Id",
+          filterFn: (row, columnId, filterValue) => {
+            const rowValue = String(row.getValue(columnId));
+            return rowValue.includes(String(filterValue));
+          },
           //use our convertToHoursAndMinutes function to render the runtime of the show
           cell: (info) => info.getValue()
 
         }),
         columnHelper.accessor("rgs_total_bet", {
           header: "RGS Total Bet",
+          filterFn: (row, columnId, filterValue) => {
+            const rowValue = String(row.getValue(columnId));
+            return rowValue.includes(String(filterValue));
+          },
           cell: (info) => info.getValue(),
           size:70,
           minSize: 50, 
@@ -56,6 +68,10 @@ export const gameplay_columns = [
         }), 
         columnHelper.accessor("game_denomination", {
           header: "Game Den.",
+          filterFn: (row, columnId, filterValue) => {
+            const rowValue = String(row.getValue(columnId));
+            return rowValue.includes(String(filterValue));
+          },
           cell: (info) => info.getValue(),
           size:50,
           minSize: 50, 
@@ -74,6 +90,10 @@ export const gameplay_columns = [
         }),   
         columnHelper.accessor("win_transaction_amount", {
           header: "Win Amount",
+          filterFn: (row, columnId, filterValue) => {
+            const rowValue = String(row.getValue(columnId));
+            return rowValue.includes(String(filterValue));
+          },
           cell: (info) => info.getValue(),
         }),   
         columnHelper.accessor("game_start_time", {
@@ -82,6 +102,10 @@ export const gameplay_columns = [
         }),   
         columnHelper.accessor("jp", {
           header: "Jackpot",
+          filterFn: (row, columnId, filterValue) => {
+            const rowValue = String(row.getValue(columnId));
+            return rowValue.includes(String(filterValue));
+          },
           cell: (info) => info.getValue(),
           size: 75
         }),             

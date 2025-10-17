@@ -233,7 +233,7 @@ export const GameplayPanel:FC<PropsWithChildren> = ({children}) => {
                 </Button>
                 <div className='w-64 flex flex-row items-center gap-4'>
                   <div>Page Size:</div>
-                  <Select onChange={(e) => setPageSize(e.target.value)} className='w-18'>
+                  <Select onChange={(e) => setPageSize(e.target.value)} value={pageSize} className='w-18'>
                       <option value="100">100</option>
                       <option value="500">500</option>
                       <option value="1000">1000</option>
