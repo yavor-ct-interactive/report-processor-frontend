@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import type { ColumnFiltersState, SortingState, ColumnResizeMode, ColumnResizeDirection, GroupColumnDef} from "@tanstack/react-table"
 import { flexRender, useReactTable } from '@tanstack/react-table';
 import type{ Column } from '@tanstack/react-table';
+import { Modal, Button, Label, TextInput, Select, ModalHeader, ModalBody, ModalFooter } from "flowbite-react";
 
 import {
   getCoreRowModel,
@@ -69,11 +70,11 @@ function Filter({ column }: { column: Column<GameplayCols, unknown> }) {
 interface FilterProps {
   column: Column<GameplayCols, unknown>;
 }
+
 const Filter: React.FC<FilterProps> = ({ column }) => {
   const columnFilterValue = column.getFilterValue();
-
-  return (
-    <input
+  return (   
+    <input className="w-full box-border"
       type="text"
       value={(columnFilterValue ?? '') as string}
       onChange={(e) => column.setFilterValue(e.target.value)}
@@ -131,8 +132,9 @@ export function AbstractTable<TData>({ columns, data, pageIndex, pageSize, setPa
                 
                 <th key={header.id} colSpan={header.colSpan} style={{ width: header.getSize() }} className="text-center align-middle">
                   {header.column.getCanFilter() && header.id !== "id" && header.id !== "select" &&(
-                    <div>
+                    <div style={{width: header.column.getSize()}}>
                       <Filter column={header.column} />
+                      
                       {/*Add your search component here */}
                     </div>
                   )}
@@ -164,6 +166,9 @@ export function AbstractTable<TData>({ columns, data, pageIndex, pageSize, setPa
       </table>
       {/* Pagination Controls */}
       <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', justifyContent: 'center' }}>
+        <div>
+          Total records: {data?.total}
+        </div>
          <button
           onClick={() => table.setPageIndex(0)}
           disabled={!table.getCanPreviousPage()}
