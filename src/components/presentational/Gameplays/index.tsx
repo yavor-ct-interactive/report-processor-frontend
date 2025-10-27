@@ -1,4 +1,6 @@
 import {createColumnHelper } from "@tanstack/react-table"
+import { advancedFilter } from "../../tables/abstractTable";
+import { stringFilter } from "../../tables/abstractTable";
 
 export type GameplayCols = {
     id: BigInteger;
@@ -14,7 +16,25 @@ export type GameplayCols = {
     added_at: Date;
     rgs_total_bet: BigInteger;
     game_denomination: BigInteger;
+    setFilter: (operator:any, value:any) => void
 }
+
+/* Filters for columns RGS_Total_Bet, Win_amount */
+const filterGreaterThan = (row, columnId, filterValue) => {
+  const rowValue = row.getValue(columnId);
+  return rowValue > filterValue;
+};
+
+const filterLessThan = (row, columnId, filterValue) => {
+  const rowValue = row.getValue(columnId);
+  return rowValue < filterValue;
+};
+
+const filterEqual = (row, columnId, filterValue) => {
+  const rowValue = row.getValue(columnId);
+  return rowValue === filterValue;
+};
+
 const columnHelper = createColumnHelper<GameplayCols>();
 
 export const gameplay_columns = [
@@ -29,10 +49,7 @@ export const gameplay_columns = [
         columnHelper.accessor("gameplay_id", {
           header: "Gameplay Id",
           aggregationFn: "count",
-          filterFn: (row, columnId, filterValue) => {
-          const rowValue = String(row.getValue(columnId));
-          return rowValue.includes(String(filterValue));
-    },
+          filterFn: stringFilter,
           cell: (info) => info.getValue(),
         }),
         columnHelper.accessor("operator", {
@@ -42,25 +59,20 @@ export const gameplay_columns = [
         }),
         columnHelper.accessor("operator_endpoint", {
           header: "Operator Endpoint",
+          filterFn: stringFilter,
           //render the Genres component here:
           cell: (info) => info.getValue() ,
         }),
         columnHelper.accessor("operator_player_id", {
           header: "Operator Player Id",
-          filterFn: (row, columnId, filterValue) => {
-            const rowValue = String(row.getValue(columnId));
-            return rowValue.includes(String(filterValue));
-          },
+          filterFn: stringFilter,
           //use our convertToHoursAndMinutes function to render the runtime of the show
           cell: (info) => info.getValue()
 
         }),
         columnHelper.accessor("rgs_total_bet", {
           header: "RGS Total Bet",
-          filterFn: (row, columnId, filterValue) => {
-            const rowValue = String(row.getValue(columnId));
-            return rowValue.includes(String(filterValue));
-          },
+          filterFn: advancedFilter,
           cell: (info) => info.getValue(),
           size:70,
           minSize: 50, 
@@ -68,10 +80,7 @@ export const gameplay_columns = [
         }), 
         columnHelper.accessor("game_denomination", {
           header: "Game Den.",
-          filterFn: (row, columnId, filterValue) => {
-            const rowValue = String(row.getValue(columnId));
-            return rowValue.includes(String(filterValue));
-          },
+          filterFn: advancedFilter,
           cell: (info) => info.getValue(),
           size:50,
           minSize: 50, 
@@ -79,6 +88,7 @@ export const gameplay_columns = [
         }), 
         columnHelper.accessor("currency", {
           header: "Currency",
+          filterFn: stringFilter,
           cell: (info) => info.getValue(),
           size:70,
           minSize: 50, 
@@ -90,22 +100,20 @@ export const gameplay_columns = [
         }),   
         columnHelper.accessor("win_transaction_amount", {
           header: "Win Amount",
-          filterFn: (row, columnId, filterValue) => {
-            const rowValue = String(row.getValue(columnId));
-            return rowValue.includes(String(filterValue));
-          },
+          filterFn: advancedFilter,
           cell: (info) => info.getValue(),
         }),   
         columnHelper.accessor("game_start_time", {
           header: "Game Start Time",
-          cell: (info) => info.getValue(),
-        }),   
-        columnHelper.accessor("jp", {
-          header: "Jackpot",
           filterFn: (row, columnId, filterValue) => {
             const rowValue = String(row.getValue(columnId));
             return rowValue.includes(String(filterValue));
           },
+          cell: (info) => info.getValue(),
+        }),   
+        columnHelper.accessor("jp", {
+          header: "Jackpot",
+          filterFn: advancedFilter,
           cell: (info) => info.getValue(),
           size: 75
         }),             
