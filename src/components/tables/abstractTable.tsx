@@ -14,6 +14,7 @@ import {
   getGroupedRowModel,
   getExpandedRowModel,
 } from '@tanstack/react-table';
+import exportToCsv  from "tanstack-table-export-to-csv";
 
 import type {GameplayCols} from '../presentational/Gameplays'
 
@@ -87,12 +88,14 @@ const Filter: React.FC<FilterProps> = ({ column }) => {
 /* New code added here */
 interface FilterModalProps {
   columnName: string;
+  columnHeader: string;
   show: boolean;
   onClose: () => void;
   onApply: (filter: { operator: string; value1: string; value2?: string }) => void;
 }
 export const FilterModal: React.FC<FilterModalProps> = ({
   columnName,
+  columnHeader,
   show,
   onClose,
   onApply,
@@ -109,11 +112,11 @@ export const FilterModal: React.FC<FilterModalProps> = ({
     onApply(undefined)
     onClose()
   }
-
+  const filter_name = columnName.replaceAll('_',' ')
   return (
     <Modal show={show} onClose={onClose} popup size="md">
       <ModalHeader>
-        Filter Column: <span className="font-semibold">{columnName}</span>
+        Filter by  <span className="font-semibold"> {columnHeader}</span>
       </ModalHeader>
       <ModalBody>
         <div className="space-y-4">
@@ -199,6 +202,7 @@ export const ColumnFilter: React.FC<FilterProps> = ({ column }) => {
       {showModal && (
         <FilterModal
           columnName={String(column.id)}
+          columnHeader={String(column.columnDef.header)}
           show={showModal}
           onClose={() => setShowModal(false)}
           onApply={handleApply}
@@ -284,8 +288,29 @@ export function AbstractTable<TData>({ columns, data, pageIndex, pageSize, setPa
   const string_filterable_columns = ['gameplay_id', 'operator', 'operator_endpoint', 'operator_player_id', 'currency', 'game', 'game_start_time'];
   const number_filterable_columns = ['rgs_total_bet', 'game_denomination', 'win_transaction_amount', 'jp']
     console.log("Page Index is :",pageSize)
+
+  const handleExportToCsv = (): void => {
+    const headers = table
+      .getHeaderGroups()
+      .map((x) => x.headers)
+      .flat();
+
+    const rows = table.getFilteredRowModel().rows;
+
+    exportToCsv(`gameplays_data_${Date.now()}`, headers, rows);
+  };
   return (
     <div style={{ direction: table.options.columnResizeDirection }}>
+      <div className='flex flex-row items-center justify-center gap-4'>
+          <div>
+            Total records: {data?.total ?? 0} 
+          </div>
+          <div>
+            Filtered records: {table.getFilteredRowModel().rows.length}
+          </div>
+          <button onClick={handleExportToCsv}>Export to csv</button>
+
+      </div>
       <table style={{ width: '100%' }} className=" text-sm text-left text-gray-500  dark:text-gray-200 table-fixed mx-auto px-4" >
         <thead className="text-xs text-gray-700  bg-gray-50 dark:bg-teal-900 dark:text-gray-400">
           {table.getHeaderGroups().map((hg) => (
@@ -333,14 +358,7 @@ export function AbstractTable<TData>({ columns, data, pageIndex, pageSize, setPa
       </table>
       {/* Pagination Controls */}
       
-       <div className='flex flex-row items-center justify-center gap-4'>
-          <div>
-            Total records: {data?.total ?? 0} 
-          </div>
-          <div>
-            Filtered records: {table.getFilteredRowModel().rows.length}
-          </div>
-      </div>
+
       <div className='flex flex-row items-center justify-center gap-4'>
          <button
           onClick={() => table.setPageIndex(0)}
@@ -370,6 +388,7 @@ export function AbstractTable<TData>({ columns, data, pageIndex, pageSize, setPa
         >
           {">>"}
         </button>
+        
       </div>
     </div>
   );

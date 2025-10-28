@@ -18,6 +18,7 @@ import { CustomModalTheme } from '../../themes/MainTheme.tsx';
 import { currentDay, previousDay, currentWeek, previousWeek, currentMonth, previousMonth } from '../date_functions/index.tsx';
 import { gameplay_columns } from './Gameplays/index.tsx';
 import { Select } from 'flowbite-react';
+import { exportToCsv } from "tanstack-table-export-to-csv";
 
 interface SummarizedItems {
     value: string;
@@ -237,6 +238,8 @@ export const GameplayPanel:FC<PropsWithChildren> = ({children}) => {
                       <option value="100">100</option>
                       <option value="500">500</option>
                       <option value="1000">1000</option>
+                      <option value="10000">10000</option>
+                      <option value="20000">20000</option>
                   </Select>
                 </div>
             </div>
