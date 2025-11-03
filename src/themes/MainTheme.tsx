@@ -10,7 +10,7 @@ export const CustomModalTheme = createTheme({
             base: "flex items-start justify-between rounded-t border-b p-5 dark:border-gray-600 text-center",
             title: "text-blue-600 text-xl font-medium text-gray-900 dark:text-white w-full text-center ",
             close:{
-              base: "p-0",
+              base: "p-0 hover:bg-neutral-100 dark:hover:bg-teal-900",
               icon: "w-7 h-7",
             }
           },

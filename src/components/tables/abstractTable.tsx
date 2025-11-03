@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import type { ColumnFiltersState, SortingState, ColumnResizeMode, ColumnResizeDirection, GroupColumnDef} from "@tanstack/react-table"
 import { flexRender, useReactTable } from '@tanstack/react-table';
 import type{ Column } from '@tanstack/react-table';
-import { Modal, Button, Label, TextInput, Select, ModalHeader, ModalBody, ModalFooter } from "flowbite-react";
+import { Modal, Button, Label, TextInput, Select, ModalHeader, ModalBody, ModalFooter, ThemeProvider } from "flowbite-react";
 import type { FilterFn } from '@tanstack/react-table';
 import { CustomButton, FilterButton } from '../presentational/Common/Buttons';
 import { ImSpinner9 } from 'react-icons/im';
+import { CustomModalTheme } from '../../themes/MainTheme';
 /*New code for table filters */
 /*End of new codee for table filters */
 import {
@@ -118,6 +119,7 @@ export const FilterModal: React.FC<FilterModalProps> = ({
   }
   const filter_name = columnName.replaceAll('_',' ')
   return (
+    <ThemeProvider theme={CustomModalTheme}>
     <Modal show={show} onClose={onClose} popup size="md">
       <ModalHeader>
         Filter by  <span className="font-semibold"> {columnHeader}</span>
@@ -171,6 +173,7 @@ export const FilterModal: React.FC<FilterModalProps> = ({
         </CustomButton>
       </ModalFooter>
     </Modal>
+    </ThemeProvider>
   );
 };
 interface FilterProps {
@@ -308,19 +311,19 @@ return (
 
       </div>
       <table className=" text-sm text-left text-gray-500  dark:text-gray-200 table-auto mx-auto " >
-        <thead className="sticky top-0 text-m text-gray-700  h-8 bg-gray-50 dark:bg-teal-900 dark:text-gray-400 z-10">
+        <thead className="sticky top-0 text-m text-gray-700 bg-neutral-100 h-8 bg-gray-50 dark:bg-teal-900 dark:text-gray-400 z-10">
           {table.getHeaderGroups().map((hg) => (
             <tr key={hg.id} >
               {hg.headers.map((header) => (
                 <th key={header.id} colSpan={header.colSpan} className={`
-                    text-center align-middle h
+                    text-center align-middle pt-2
                     ${header.index === 0 ? "pl-2 pr-1" : ""}
                     ${header.index === hg.headers.length - 1 ? "pr-2" : ""}
                     ${header.index != 0 && header.index != hg.headers.length -1 && 'pr-1'}`
                   }  >                  
                   {header.column.getCanFilter() &&
                       string_filterable_columns.includes(header.id as string) && (
-                        <div s>
+                        <div>
                           <Filter column={header.column} />
                         </div>
                   )}
@@ -331,8 +334,9 @@ return (
                       </div>
                   )}
                   <div
-                    onClick={header.column.getToggleSortingHandler()}
-                    style={{ cursor: header.column.getCanSort() ? 'pointer' : undefined}}
+                    onClick={header.column.getToggleSortingHandler()} 
+                    className={`${header.column.getCanSort() ? 'cursor-pointer' : ''} pt-1 pb-1`}
+
                   >
                     {flexRender(header.column.columnDef.header, header.getContext())}
                     {{
@@ -349,7 +353,7 @@ return (
         
         <tbody>
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className="even:bg-gray-100 odd:bg-white dark:even:bg-neutral-950 dark:odd:bg-black">
+            <tr key={row.id} className="even:bg-gray-100 odd:bg-white dark:even:bg-neutral-800 dark:odd:bg-black">
               {row.getVisibleCells().map((cell, index) => (
                 <td key={cell.id} className={`
                   text-center align-middle truncate whitespace-nowrap overflow-hidden
