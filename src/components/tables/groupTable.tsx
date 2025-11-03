@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { RPSelect } from '../presentational/SelectElement';
 import axios from 'axios';
 import dayjs from 'dayjs';
+import { CustomButton } from '../presentational/Common/Buttons';
 
 export interface SummarizedItems {
     value: string;
@@ -117,7 +118,7 @@ export const SummarizedWinningsComponent = ( {start_date, end_date, onLoadData}:
                     <hr className='mb-3 mt-3'/>
                     {data.items.map( (item) => (
                         <div className="flex flex-row mb-2">
-                        <div className='w-1/3'>{item.value}</div><div className='w-1/3'>{item.count}</div><div className='w-1/3'><Button color="alternate" onClick = { () => onLoadData?.({item: item.value, criteria: data.criteria})}>Load Data</Button></div>
+                        <div className='w-1/3'>{item.value}</div><div className='w-1/3'>{item.count}</div><div className='w-1/3'><CustomButton onClick = { () => onLoadData?.({item: item.value, criteria: data.criteria})}>Load Data</CustomButton></div>
                         </div>
                     ))}
                     

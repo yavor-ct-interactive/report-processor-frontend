@@ -4,6 +4,8 @@ import { flexRender, useReactTable } from '@tanstack/react-table';
 import type{ Column } from '@tanstack/react-table';
 import { Modal, Button, Label, TextInput, Select, ModalHeader, ModalBody, ModalFooter } from "flowbite-react";
 import type { FilterFn } from '@tanstack/react-table';
+import { CustomButton, FilterButton } from '../presentational/Common/Buttons';
+import { ImSpinner9 } from 'react-icons/im';
 /*New code for table filters */
 /*End of new codee for table filters */
 import {
@@ -77,12 +79,14 @@ interface FilterProps {
 const Filter: React.FC<FilterProps> = ({ column }) => {
   const columnFilterValue = column.getFilterValue();
   return (   
-    <input className="w-full box-border"
-      type="text"
-      value={(columnFilterValue ?? '') as string}
-      onChange={(e) => column.setFilterValue(e.target.value)}
-      placeholder={`Search...`}
-    />
+    <div className="w-full flex justify-center">
+      <TextInput className="w-full box-border"
+        type="text"
+        value={(columnFilterValue ?? '') as string}
+        onChange={(e) => column.setFilterValue(e.target.value)}
+        placeholder={`Search...`}
+      />
+    </div>
   );
 };  
 /* New code added here */
@@ -156,15 +160,15 @@ export const FilterModal: React.FC<FilterModalProps> = ({
         </div>
       </ModalBody>
       <ModalFooter>
-        <Button className="bg-red-500 text-gray-700 dark:text-white hover:bg-red-600" onClick={handleApply}>
+        <CustomButton onClick={handleApply}>
           Apply
-        </Button>
-        <Button className="bg-red-500 text-gray-700 dark:text-white hover:bg-red-600" onClick={() => handleClear()}>
+        </CustomButton>
+        <CustomButton onClick={() => handleClear()}>
           Clear
-        </Button>
-        <Button className="bg-red-500 text-gray-700 dark:text-white hover:bg-red-600" onClick={onClose}>
+        </CustomButton>
+        <CustomButton onClick={onClose}>
           Cancel
-        </Button>
+        </CustomButton>
       </ModalFooter>
     </Modal>
   );
@@ -190,14 +194,12 @@ export const ColumnFilter: React.FC<FilterProps> = ({ column }) => {
 
   return (
     <>
-      <Button
+      <FilterButton
         size="xs"
-        color=""
         onClick={() => setShowModal(true)}
-        className="w-full text-xs"
       >
         Filter
-      </Button>
+      </FilterButton>
 
       {showModal && (
         <FilterModal
@@ -243,9 +245,13 @@ export const advancedFilter: FilterFn<any> = (row, columnId, filterValue) => {
 };
 /*end of new code for filters */ 
 /*End of new code */
-export function AbstractTable<TData>({ columns, data, pageIndex, pageSize, setPageIndex, setPageSize, nextPage, prevPage }: TableProps<TData>) {
+export function AbstractTable<TData>({ columns, data, pageSize}: TableProps<TData>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 100,
+  });
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnResizeMode, setColumnResizeMode] = React.useState<ColumnResizeMode>("onChange");
   const [columnResizeDirection, setColumnResizeDirection] = React.useState<ColumnResizeDirection>("ltr");
@@ -262,19 +268,13 @@ export function AbstractTable<TData>({ columns, data, pageIndex, pageSize, setPa
     debugColumns: true,
     state: {
       sorting,
-      pagination: { pageIndex, pageSize },
+      pagination,
       columnFilters,
     },
     columnResizeMode: 'onChange',
-    manualPagination: true,
-    manualFiltering: false,
-    pageCount: Math.ceil(data?.total / pageSize),
     // table.getFilteredRowModel().rows.length} / {data?.items?.length ?? 0
     onSortingChange: setSorting,
-    onPaginationChange: (updater) =>
-      typeof updater === "function"
-        ? setPageIndex((old) => updater({ pageIndex: old, pageSize }).pageIndex)
-        : setPageIndex(updater.pageIndex),
+    onPaginationChange: setPagination,
     onGlobalFilterChange: setGlobalFilter,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -287,7 +287,6 @@ export function AbstractTable<TData>({ columns, data, pageIndex, pageSize, setPa
   });
   const string_filterable_columns = ['gameplay_id', 'operator', 'operator_endpoint', 'operator_player_id', 'currency', 'game', 'game_start_time'];
   const number_filterable_columns = ['rgs_total_bet', 'game_denomination', 'win_transaction_amount', 'jp']
-    console.log("Page Index is :",pageSize)
 
   const handleExportToCsv = (): void => {
     const headers = table
@@ -299,40 +298,41 @@ export function AbstractTable<TData>({ columns, data, pageIndex, pageSize, setPa
 
     exportToCsv(`gameplays_data_${Date.now()}`, headers, rows);
   };
-  return (
-    <div style={{ direction: table.options.columnResizeDirection }}>
-      <div className='flex flex-row items-center justify-center gap-4'>
-          <div>
-            Total records: {data?.total ?? 0} 
-          </div>
+return (
+    <div className="relative overflow-y-auto max-h-[75vh] min-h-[75vh] border w-full border-gray-700 rounded-lg">
+      <div className='flex flex-row items-center justify-center gap-4 p-4'>
           <div>
             Filtered records: {table.getFilteredRowModel().rows.length}
           </div>
-          <button onClick={handleExportToCsv}>Export to csv</button>
+          <CustomButton onClick={handleExportToCsv}>Export to csv</CustomButton>
 
       </div>
-      <table style={{ width: '100%' }} className=" text-sm text-left text-gray-500  dark:text-gray-200 table-fixed mx-auto px-4" >
-        <thead className="text-xs text-gray-700  bg-gray-50 dark:bg-teal-900 dark:text-gray-400">
+      <table className=" text-sm text-left text-gray-500  dark:text-gray-200 table-auto mx-auto " >
+        <thead className="sticky top-0 text-m text-gray-700  h-8 bg-gray-50 dark:bg-teal-900 dark:text-gray-400 z-10">
           {table.getHeaderGroups().map((hg) => (
-            <tr key={hg.id}>
+            <tr key={hg.id} >
               {hg.headers.map((header) => (
-                
-                <th key={header.id} colSpan={header.colSpan} style={{ width: header.getSize() }} className="text-center align-middle">
+                <th key={header.id} colSpan={header.colSpan} className={`
+                    text-center align-middle h
+                    ${header.index === 0 ? "pl-2 pr-1" : ""}
+                    ${header.index === hg.headers.length - 1 ? "pr-2" : ""}
+                    ${header.index != 0 && header.index != hg.headers.length -1 && 'pr-1'}`
+                  }  >                  
                   {header.column.getCanFilter() &&
                       string_filterable_columns.includes(header.id as string) && (
-                        <div style={{ width: header.column.getSize() }}>
+                        <div s>
                           <Filter column={header.column} />
                         </div>
-                    )}
-                    {header.column.getCanFilter() &&
-                      number_filterable_columns.includes(header.id as string) && (
-                        <div style={{ width: header.column.getSize() }}>
-                          <ColumnFilter column={header.column} />
-                        </div>
-                    )}
+                  )}
+                  {header.column.getCanFilter() &&
+                    number_filterable_columns.includes(header.id as string) && (
+                      <div  >
+                        <ColumnFilter column={header.column} />
+                      </div>
+                  )}
                   <div
                     onClick={header.column.getToggleSortingHandler()}
-                    style={{ cursor: header.column.getCanSort() ? 'pointer' : undefined }}
+                    style={{ cursor: header.column.getCanSort() ? 'pointer' : undefined}}
                   >
                     {flexRender(header.column.columnDef.header, header.getContext())}
                     {{
@@ -346,49 +346,53 @@ export function AbstractTable<TData>({ columns, data, pageIndex, pageSize, setPa
             </tr>
           ))}
         </thead>
+        
         <tbody>
           {table.getRowModel().rows.map((row) => (
             <tr key={row.id} className="even:bg-gray-100 odd:bg-white dark:even:bg-neutral-950 dark:odd:bg-black">
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="text-center align-middle truncate whitespace-nowrap overflow-hidden">{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
+              {row.getVisibleCells().map((cell, index) => (
+                <td key={cell.id} className={`
+                  text-center align-middle truncate whitespace-nowrap overflow-hidden
+                  ${index === 0 ? "pl-2" : ""}
+                  ${index === row.getVisibleCells().length - 1 ? "pr-2" : ""}
+                  ${index != 0 && index != row.getVisibleCells().length -1 && 'pr-1'}
+                  `
+                } 
+                  >{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
               ))}
             </tr>
           ))}
         </tbody>
       </table>
-      {/* Pagination Controls */}
-      
-
-      <div className='flex flex-row items-center justify-center gap-4'>
-         <button
+      <div className='flex flex-row items-center justify-center gap-4 p-4'>
+        <CustomButton
           onClick={() => table.setPageIndex(0)}
           disabled={!table.getCanPreviousPage()}
         >
-          {"<<"}
-        </button>
-        <button
-          onClick={() => prevPage()}
+          First
+        </CustomButton>
+        <CustomButton 
+          onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
         >
-          {"<"}
-        </button>
+          Prev
+        </CustomButton>
         <span>
-          Page <strong>{pageIndex + 1}</strong> of{" "}
+          Page <strong>{table.getState().pagination.pageIndex + 1}</strong> of{" "}
           {table.getPageCount()}
         </span>
-        <button
-          onClick={() => nextPage()}
+        <CustomButton
+          onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage()}
         >
-          {">"}
-        </button>
-        <button
+          Next
+        </CustomButton>
+        <CustomButton
           onClick={() => table.setPageIndex(table.getPageCount() - 1)}
           disabled={!table.getCanNextPage()}
         >
-          {">>"}
-        </button>
-        
+          Last
+        </CustomButton>
       </div>
     </div>
   );

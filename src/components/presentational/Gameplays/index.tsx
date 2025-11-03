@@ -43,68 +43,88 @@ export const gameplay_columns = [
           aggregationFn: "count",
           cell: (info) => info.getValue(),
           size: 50,
-          minSize: 30, 
-          maxSize: 100
+          minSize: 50, 
+          maxSize: 50
         }),
         columnHelper.accessor("gameplay_id", {
-          header: "Gameplay Id",
+          header: "Gameplay_ID",
           aggregationFn: "count",
           filterFn: stringFilter,
           cell: (info) => info.getValue(),
+          size: 120,
+          minSize: 120,
+          maxSize: 120,
+          enableResizing: true,
         }),
         columnHelper.accessor("operator", {
           header: "Operator",
           aggregationFn: "count",
           cell: (info) => info.getValue(),
+          enableResizing: false,
+          size: 170,
+          minSize: 170,
+          maxSize: 170,
         }),
         columnHelper.accessor("operator_endpoint", {
-          header: "Operator Endpoint",
+          header: "Endpoint",
           filterFn: stringFilter,
           //render the Genres component here:
           cell: (info) => info.getValue() ,
+          size: 170,
+          minSize: 170,
+          maxSize: 170,
         }),
         columnHelper.accessor("operator_player_id", {
-          header: "Operator Player Id",
+          header: "Player_ID",
           filterFn: stringFilter,
           //use our convertToHoursAndMinutes function to render the runtime of the show
-          cell: (info) => info.getValue()
+          cell: (info) => info.getValue(),
+          size: 200,
+          minSize: 200,
+          maxSize: 300,
 
         }),
         columnHelper.accessor("rgs_total_bet", {
-          header: "RGS Total Bet",
+          header: "TB",
+          filterFn: advancedFilter,
+          cell: (info) => info.getValue(),
+          size: 70,
+          minSize: 70, 
+          maxSize: 70,
+        }), 
+        columnHelper.accessor("game_denomination", {
+          header: "DEN",
           filterFn: advancedFilter,
           cell: (info) => info.getValue(),
           size:70,
-          minSize: 50, 
-          maxSize: 100,
-        }), 
-        columnHelper.accessor("game_denomination", {
-          header: "Game Den.",
-          filterFn: advancedFilter,
-          cell: (info) => info.getValue(),
-          size:50,
-          minSize: 50, 
-          maxSize: 100,
+          minSize: 70, 
+          maxSize: 70,
         }), 
         columnHelper.accessor("currency", {
-          header: "Currency",
+          header: "CCY",
           filterFn: stringFilter,
           cell: (info) => info.getValue(),
           size:70,
-          minSize: 50, 
-          maxSize: 100,
+          minSize: 70, 
+          maxSize: 70,
         }), 
         columnHelper.accessor("game", {
           header: "Game",
           cell: (info) => info.getValue(),
+          size: 120,
+          minSize: 120,
+          maxSize: 120,
         }),   
         columnHelper.accessor("win_transaction_amount", {
-          header: "Win Amount",
+          header: "Win",
           filterFn: advancedFilter,
           cell: (info) => info.getValue(),
+          size: 120,
+          minSize: 120,
+          maxSize: 120,
         }),   
         columnHelper.accessor("game_start_time", {
-          header: "Game Start Time",
+          header: "Game_Start_Time",
           filterFn: (row, columnId, filterValue) => {
             const rowValue = String(row.getValue(columnId));
             return rowValue.includes(String(filterValue));
@@ -115,6 +135,8 @@ export const gameplay_columns = [
           header: "Jackpot",
           filterFn: advancedFilter,
           cell: (info) => info.getValue(),
-          size: 75
+          size: 120,
+          minSize: 120,
+          maxSize: 120,
         }),             
       ]

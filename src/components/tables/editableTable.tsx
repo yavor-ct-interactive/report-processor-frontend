@@ -181,7 +181,7 @@ export function EditableTable<TData>({ columns, data, editButtonMethod, newButto
             <Button color="alternative" onClick={() => {table.resetRowSelection(); return (newButtonMethod())}}><div className="flex flex-row gap-2 items-center">
                 <IoAddCircleOutline /> <div>New</div></div></Button>
         </div>
-      <table style={{ width: '100%' }} className=" text-sm text-left text-gray-500  dark:text-gray-200 table-fixed mx-auto px-4" >
+      <table className="text-sm text-left text-gray-500 dark:text-gray-200 table-fixed mx-auto px-4" >
         <thead className="text-xs text-gray-700  bg-gray-50 dark:bg-teal-900 dark:text-gray-400">
           {table.getHeaderGroups().map((hg) => (
             <tr key={hg.id}>

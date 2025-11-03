@@ -19,6 +19,7 @@ import { currentDay, previousDay, currentWeek, previousWeek, currentMonth, previ
 import { gameplay_columns } from './Gameplays/index.tsx';
 import { Select } from 'flowbite-react';
 import { exportToCsv } from "tanstack-table-export-to-csv";
+import { CustomButton } from './Common/Buttons.tsx';
 
 interface SummarizedItems {
     value: string;
@@ -41,7 +42,7 @@ const returnDataComponent = () => {
 
 export const GameplayPanel:FC<PropsWithChildren> = ({children}) => {
     const [pageIndex, setPageIndex] = useState(0)
-    const [pageSize, setPageSize] = useState(500)
+    const [pageSize, setPageSize] = useState(100)
     const nextPage = () => {
       console.log(pageIndex) 
       return setPageIndex((old) => old + 1);
@@ -140,17 +141,17 @@ export const GameplayPanel:FC<PropsWithChildren> = ({children}) => {
       }
   };
 
-    const queryDataFn = async (pageIndex, pageSize) => {
+    const queryDataFn = async () => {
       const formData = new FormData()
       formData.append("start_date",dayjs(startDate).format('YYYY-MM-DD HH:mm:ss'));
       formData.append("end_date", dayjs(endDate).format('YYYY-MM-DD HH:mm:ss'));
-      formData.append("page", pageIndex+1);
-      formData.append("per_page", pageSize);
+      //formData.append("page", pageIndex+1);
+      //formData.append("per_page", pageSize);
       if (includeParams){
         formData.append("groupby", groupby);
         formData.append("groupby_param", groupbyParam);
-        formData.append("page", pageIndex+1);
-        formData.append("per_page", pageSize);
+        //formData.append("page", pageIndex+1);
+        //formData.append("per_page", pageSize);
       }
       const data_url_l = `${data_url}`
       const {data} = await axios.post(data_url_l, formData ) 
@@ -159,8 +160,8 @@ export const GameplayPanel:FC<PropsWithChildren> = ({children}) => {
     }
 
     const gameplays = useQuery({
-      queryKey: [`gameplays, ${startDate}, ${endDate}, ${randNumber}, ${pageIndex}, ${pageSize}`],
-      queryFn: () => queryDataFn(pageIndex, pageSize),
+      queryKey: [`gameplays, ${startDate}, ${endDate}, ${randNumber}, `],
+      queryFn: () => queryDataFn(),
       refetchOnWindowFocus: true,
       keepPreviousData: true,
     })
@@ -213,7 +214,6 @@ export const GameplayPanel:FC<PropsWithChildren> = ({children}) => {
       });
     console.log(pageIndex)
     return (
-      <div>
         <div className="w-full flex flex-col items-stretch space-y-3 justify-between  dark:border-gray-700">
             {inProgress ? <ImSpinner9 className="loading-icon" /> : ""} 
             <div className="flex flex-row items-stretch justify-start gap-4 border-b-1 pb-2">
@@ -226,37 +226,21 @@ export const GameplayPanel:FC<PropsWithChildren> = ({children}) => {
                 <div>End Date</div>
                 <DateTimePicker start_date={endDate} onChange={(e) => setEndDate(e)}/>
               </div>           
-                <Button className="bg-red-500 text-gray-700 dark:text-white hover:bg-red-600"  disabled={selectGroupByWinningCriteriaDisabled()}
+                <CustomButton  disabled={selectGroupByWinningCriteriaDisabled()}
                   onClick={(e) => {
                     setOpenModal(true)
                   }}>
                     Group By Winnings
-                </Button>
-                <div className='w-64 flex flex-row items-center gap-4'>
-                  <div>Page Size:</div>
-                  <Select onChange={(e) => setPageSize(e.target.value)} value={pageSize} className='w-18'>
-                      <option value="100">100</option>
-                      <option value="500">500</option>
-                      <option value="1000">1000</option>
-                      <option value="10000">10000</option>
-                      <option value="20000">20000</option>
-                  </Select>
-                </div>
+                </CustomButton>
             </div>
-            <div>
             {gameplays.isSuccess ? 
             <AbstractTable                            
                             data={gameplays?.data}
                             columns={gameplay_columns}
-                            pageIndex={pageIndex}
                             pageSize={pageSize}
-                            setPageIndex={setPageIndex}
-                            setPageSize={setPageSize}
-                            nextPage={nextPage}
-                            prevPage={prevPage}
             />: ''
             }
-            </div>
+            {gameplays.isPending ? 'Loading ... ' : ''}
             <div>
               <ThemeProvider theme={CustomModalTheme}>
               <Modal show={openModal} size="5xl" popup onClose={() => setOpenModal(false)} position="center" >
@@ -278,8 +262,6 @@ export const GameplayPanel:FC<PropsWithChildren> = ({children}) => {
              
             </div>
 
-        </div>
-          
         </div>
     )
 }

@@ -14,17 +14,18 @@ import { PromosPanel } from './components/presentational/PromosPanel';
 import { GrSystem } from "react-icons/gr";
 import { MdOutlineCampaign } from "react-icons/md";
 import {EndpointsLogsPanel} from './components/presentational/EndpointsLogsPanel';
-
+import {LoginForm} from './components/Forms/LoginForm.tsx';
+import { ProtectedPanel } from './components/presentational/ProtectedPanel.tsx';
+//import { UsersManagementPanel } from './components/manage_users/UsersManagementPanel.tsx';
 
 
 function App() {
   const [count, setCount] = useState(0)
   const location = useLocation();
-  const validPaths = ["/gameplay-stats", "/system-info", "/promos", "/endpoints-logs"];
+  const validPaths = ["/gameplay-stats", "/system-info", "/promos", "/endpoints-logs", "/login", "/protected","/user-management"];
   const showWrapper = validPaths.includes(location.pathname);
   return (
-    <section className="bg-gray-50 h-screen dark:bg-black w-screen min-h-screen dark:text-gray-200 w-full "> 
-      <div className="border" >
+    <section className="bg-gray-50  dark:bg-black w-screen  dark:text-gray-200 w-full "> 
         
         <nav className="relative sm:rounded-lg overflow-x-hidden mb-2 mx-4 w-11/12">
           <ul className="flex items-center justify-center text-gray-900  gap-2 p-2">
@@ -52,20 +53,24 @@ function App() {
                 </div>
               </Link>
             </li>
+            <Route path="/user-management" element = {<UsersManagementPanel />} />
           */}            
           </ul>
         </nav>
         {showWrapper && (
-        <div className="bg-white border h-dvh min-h-dvh dark:bg-gray-800 relative overflow-auto p-3 mx-4 mb-5"> 
+        <div className="border dark:bg-gray-800 relative overflow-auto p-3 mx-4 mb-5"> 
             <Routes> 
               <Route path="/gameplay-stats" element={<GameplayPanel />} />
               <Route path="/system-info" element={<SysinfoPanel />} />
               <Route path="/promos" element = {<PromosPanel />} />
-              <Route path="/endpoints-logs" element = {<EndpointsLogsPanel />} />
+             { // <Route path="/login" element = {<LoginForm />} /> 
+             }
+             { //<Route path="/protected" element= { <ProtectedPanel /> } />
+             }
+              <Route path="/endpoints-logs" element = {<EndpointsLogsPanel />} />           
             </Routes>
           </div>
         )}
-      </div>
     </section>
   )
 }
