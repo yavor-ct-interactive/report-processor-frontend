@@ -30,7 +30,7 @@ interface SummarizedWinningsProps {
     items: SummarizedItems[];
 }
 
-const data_url = "/backend/get-gameplay-data"
+const data_url = "/backend/get-gameplay-data-test"
 const returnDataComponent = () => {
   return (
     <div>
@@ -163,7 +163,7 @@ export const GameplayPanel:FC<PropsWithChildren> = ({children}) => {
       queryKey: [`gameplays, ${startDate}, ${endDate}, ${randNumber}, `],
       queryFn: () => queryDataFn(),
       refetchOnWindowFocus: true,
-      keepPreviousData: true,
+      placeholderData: (previousData) => previousData,
     })
     
     function onLoadData(e:any) {
@@ -233,14 +233,28 @@ export const GameplayPanel:FC<PropsWithChildren> = ({children}) => {
                     Group By Winnings
                 </CustomButton>
             </div>
-            {gameplays.isSuccess ? 
+            {gameplays.isSuccess && 
             <AbstractTable                            
                             data={gameplays?.data}
                             columns={gameplay_columns}
                             pageSize={pageSize}
-            />: ''
+            />
             }
-            {gameplays.isPending ? 'Loading ... ' : ''}
+            {gameplays.isFetching && !gameplays.isLoading && (
+              <div className="absolute inset-0 flex justify-center items-center bg-white/50 z-50">
+                <ImSpinner9 className="animate-spin text-3xl text-blue-600" />
+              </div>
+            )}
+            {gameplays.isLoading && 
+              <div className="absolute inset-0 flex justify-center items-center bg-white/50 z-50">
+                <ImSpinner9 className="animate-spin text-3xl text-blue-600" />
+              </div>
+            }
+            {gameplays.isError && (
+              <div className="p-4 m-2 border border-red-500 text-red-700 bg-red-100 rounded">
+                Error loading data: {gameplays.error instanceof Error ? gameplays.error.message : "Unknown error"}
+              </div>
+            )}
             <div>
               <ThemeProvider theme={CustomModalTheme}>
               <Modal show={openModal} size="5xl" popup onClose={() => setOpenModal(false)} position="center" >

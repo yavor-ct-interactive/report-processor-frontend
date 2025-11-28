@@ -219,8 +219,9 @@ export const ColumnFilter: React.FC<FilterProps> = ({ column }) => {
 /*New code for filters */
 export const stringFilter: FilterFn<any> = (row, columnId, filterValue) => {
             const rowValue = String(row.getValue(columnId));
-            return rowValue.includes(String(filterValue));
+            return rowValue.toLowerCase().includes(String(filterValue.toLowerCase()));
           }
+
 export const advancedFilter: FilterFn<any> = (row, columnId, filterValue) => {
   if (!filterValue) return true;
 
