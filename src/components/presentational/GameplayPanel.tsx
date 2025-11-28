@@ -30,7 +30,7 @@ interface SummarizedWinningsProps {
     items: SummarizedItems[];
 }
 
-const data_url = "/backend/get-gameplay-data-test"
+const data_url = "/backend/get-gameplay-data"
 const returnDataComponent = () => {
   return (
     <div>
