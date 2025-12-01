@@ -33,50 +33,22 @@ type TableProps<TData> = {
     prevPage: () => void,
     totalCount: number,
 };
-/*export function Searchbar({
-    value: initialValue,
-    onChange,
-    ...props
-  }: {
-    value: string | number;
-    onChange: (value: string | number) => void;
-  } & Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange">) {
-    const [value, setValue] = useState(initialValue);
-    useEffect(() => {
-      setValue(initialValue);
-    }, [initialValue]);
-    //if the entered value changes, run the onChange handler once again.
-    useEffect(() => {
-      onChange(value);
-    }, [value]);
-    //render the basic searchbar:
-    return (
-      <input className="w-full"
-        {...props}
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-      />
-    );
-  }
-  
-function Filter({ column }: { column: Column<GameplayCols, unknown> }) {
-    const columnFilterValue = column.getFilterValue();
 
-    return (
-      <Searchbar
-        onChange={(value) => {
-          column.setFilterValue(value);
-        }}
-        placeholder={`Search...`}
-        type="text"
-        value={(columnFilterValue ?? "") as string}
-      />
-    );
-  }
-*/
-interface FilterProps {
-  column: Column<GameplayCols, unknown>;
+interface EndpointLogsCols {
+    endpoint: string,
+    sender_ip: string, 
+    filename: string,
+    unique_identifier: string, 
+    status_code: string,
+    error_message: string,
+    result: string,
+    started_at: Date,
+    ended_at: Date
 }
+interface FilterProps {
+  column: Column<EndpointLogsCols, unknown>;
+}
+
 
 const Filter: React.FC<FilterProps> = ({ column }) => {
   const columnFilterValue = column.getFilterValue();
@@ -91,6 +63,7 @@ const Filter: React.FC<FilterProps> = ({ column }) => {
     </div>
   );
 };  
+
 /* New code added here */
 interface FilterModalProps {
   columnName: string;
@@ -216,9 +189,7 @@ export function EndpointLogsTable<TData>({ columns, data}: TableProps<TData>) {
     getGroupedRowModel: getGroupedRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
   });
-  const string_filterable_columns = ['gameplay_id', 'operator', 'operator_endpoint', 'operator_player_id', 'currency', 'game', 'game_start_time'];
-  const number_filterable_columns = ['rgs_total_bet', 'game_denomination', 'win_transaction_amount', 'jp']
-
+  const string_filterable_columns = ['command', 'sender_ip', 'uploaded_filename', 'unique_identifier', 'status_code', 'error_message', 'result', 'started_at', 'ended_at'];
   const handleExportToCsv = (): void => {
     const headers = table
       .getHeaderGroups()
@@ -243,19 +214,14 @@ return (
           {table.getHeaderGroups().map((hg) => (
             <tr key={hg.id} >
               {hg.headers.map((header) => (
+                
                 <th key={header.id} colSpan={header.colSpan} style={{ width: header.getSize() }} 
                  className="overflow-hidden text-ellipsis whitespace-wrap p-2" >                  
                   {header.column.getCanFilter() &&
                       string_filterable_columns.includes(header.id as string) && (
-                        <div>
+                        <div className="flex flex-row h-8 whitespace-wrap mb-2 ">
                           <Filter column={header.column} />
                         </div>
-                  )}
-                  {header.column.getCanFilter() &&
-                    number_filterable_columns.includes(header.id as string) && (
-                      <div  >
-                        <ColumnFilter column={header.column} />
-                      </div>
                   )}
                   <div
                     onClick={header.column.getToggleSortingHandler()} 

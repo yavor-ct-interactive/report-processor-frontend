@@ -15,7 +15,8 @@ import { PromosForm } from '../Forms/PromosForm.tsx';
 import { NewPromosForm } from '../Forms/NewPromoForm.tsx';
 import { AbstractTable } from '../tables/abstractTable.tsx';
 import { EndpointLogsTable } from '../tables/EndpointLogsTable.tsx';
-
+import { advancedFilter } from '../tables/abstractTable.tsx';
+import { stringFilter } from "../tables/abstractTable";
 const data_url = '/backend/sysinfo/get-cmd-exec-stats'
 
 const fetchEndpointsLogs = async ({pageIndex, pageSize}:any) => {
@@ -54,7 +55,7 @@ export const EndpointsLogsPanel:FC<PropsWithChildren<{}>> = ({children}) => {
     const [editPromoModal, setEditPromoModal] = useState<String | undefined>()
     const [newRecord, setNewRecord] = useState(false)
     const [pageIndex, setPageIndex] = useState(0)
-    const [pageSize, setPageSize] = useState(100)
+    const [pageSize, setPageSize] = useState(10000)
     
 
   const columnHelper = createColumnHelper<EndpointLogsCols>();
@@ -81,12 +82,14 @@ export const EndpointsLogsPanel:FC<PropsWithChildren<{}>> = ({children}) => {
           aggregationFn: "count",
           cell: (info) => info.getValue(),
           size: 100,
+          filterFn: stringFilter,
           minSize: 100, 
           maxSize: 100
         }),
         columnHelper.accessor("sender_ip", {
           header: "Sender IP",
           aggregationFn: "count",
+          filterFn: stringFilter,
           cell: (info) => info.getValue(),
           size: 50,
           minSize: 50, 
@@ -95,6 +98,7 @@ export const EndpointsLogsPanel:FC<PropsWithChildren<{}>> = ({children}) => {
         columnHelper.accessor("uploaded_filename", {
           header: "Filename",
           aggregationFn: "count",
+          filterFn: stringFilter,
           cell: (info) => info.getValue(),
           size: 100,
           minSize: 100, 
@@ -120,6 +124,7 @@ export const EndpointsLogsPanel:FC<PropsWithChildren<{}>> = ({children}) => {
                 {info.getValue()}
              </div>
           ),
+          filterFn: stringFilter,
           size: 30, 
           minSize: 30, 
           maxSize:30
@@ -136,6 +141,7 @@ export const EndpointsLogsPanel:FC<PropsWithChildren<{}>> = ({children}) => {
           header: "Result",
           cell: (info) => info.getValue(),
           size:50,
+          filterFn: stringFilter,
           minSize:50,
           maxSize:50
         }), 
@@ -165,12 +171,7 @@ export const EndpointsLogsPanel:FC<PropsWithChildren<{}>> = ({children}) => {
               <EndpointLogsTable                            
                   data={promos?.data}
                   columns={columns}
-                  pageIndex={pageIndex}
                   pageSize={pageSize}
-                  setPageIndex={setPageIndex}
-                  setPageSize={setPageSize}
-                  nextPage={nextPage}
-                  prevPage={prevPage}
                 />: ''
             }
             </div>
