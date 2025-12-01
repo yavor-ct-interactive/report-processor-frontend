@@ -63,7 +63,7 @@ export const EndpointsLogsPanel:FC<PropsWithChildren<{}>> = ({children}) => {
   const nextPage = () => setPageIndex((old) => old + 1);
   const prevPage = () => setPageIndex((old) => Math.max(old - 1, 0));
 
-  const promos = useQuery({
+  const query_data = useQuery({
       queryKey: ["promos", pageIndex, pageSize],
       queryFn: () =>
         fetchEndpointsLogs({
@@ -71,7 +71,7 @@ export const EndpointsLogsPanel:FC<PropsWithChildren<{}>> = ({children}) => {
           pageSize: pageSize,
         }),
       enabled: pageSize > 0,
-      keepPreviousData: true,
+      placeholderData: (previousData) => previousData,
       throwOnError: (error) => error.response?.status >= 500,
 
     });
@@ -87,7 +87,7 @@ export const EndpointsLogsPanel:FC<PropsWithChildren<{}>> = ({children}) => {
           maxSize: 100
         }),
         columnHelper.accessor("sender_ip", {
-          header: "Sender IP",
+          header: "Sender",
           aggregationFn: "count",
           filterFn: stringFilter,
           cell: (info) => info.getValue(),
@@ -105,7 +105,7 @@ export const EndpointsLogsPanel:FC<PropsWithChildren<{}>> = ({children}) => {
           maxSize: 100
         }),
         columnHelper.accessor("unique_identifier", {
-          header: "Unique identifier",
+          header: "ID",
           aggregationFn: "count",
           cell: (info) => (
              <div className="flex justify-center items-center w-full">
@@ -117,7 +117,7 @@ export const EndpointsLogsPanel:FC<PropsWithChildren<{}>> = ({children}) => {
           maxSize: 50
         }),
         columnHelper.accessor("status_code", {
-          header: "Status Code",
+          header: "Status",
           //render the Genres component here:
           cell: (info) => (
              <div className="flex justify-center items-center w-full">
@@ -130,7 +130,7 @@ export const EndpointsLogsPanel:FC<PropsWithChildren<{}>> = ({children}) => {
           maxSize:30
         }),
         columnHelper.accessor("error_message", {
-          header: "Error Message",
+          header: "Error",
           //use our convertTsoHoursAndMinutes function to render the runtime of the show
           cell: (info) => info.getValue(),
           size: 200, 
@@ -146,14 +146,14 @@ export const EndpointsLogsPanel:FC<PropsWithChildren<{}>> = ({children}) => {
           maxSize:50
         }), 
         columnHelper.accessor("started_at", {
-          header: "Started At",
+          header: "Started",
           cell: (info) => info.getValue(),
           size: 50,
           minSize:50,
           maxSize: 50
         }),   
         columnHelper.accessor("ended_at", {
-          header: "Ended At",
+          header: "Ended",
           cell: (info) => info.getValue(),
           size: 50,
           minSize: 50,
@@ -164,16 +164,29 @@ export const EndpointsLogsPanel:FC<PropsWithChildren<{}>> = ({children}) => {
     return (
       <div>
         <div className="w-full flex flex-col items-stretch space-y-3 justify-between  overflow-x-hidden dark:border-gray-700">
-            {inProgress ? <ImSpinner9 className="loading-icon" /> : ""} 
             <div>
-            {promos.isError ? <div>An error occured</div> : ''}
-            {promos.isSuccess ? 
+            {query_data.isSuccess ? 
               <EndpointLogsTable                            
-                  data={promos?.data}
+                  data={query_data?.data}
                   columns={columns}
                   pageSize={pageSize}
                 />: ''
             }
+            {query_data.isFetching && !query_data.isLoading && (
+                          <div className="absolute inset-0 flex justify-center items-center bg-white/50 z-50">
+                            <ImSpinner9 className="animate-spin text-3xl text-blue-600" />
+                          </div>
+                        )}
+            {query_data.isLoading && 
+              <div className="absolute inset-0 flex justify-center items-center bg-white/50 z-50">
+                <ImSpinner9 className="animate-spin text-3xl text-blue-600" />
+              </div>
+            }
+            {query_data.isError && (
+              <div className="p-4 m-2 border border-red-500 text-red-700 bg-red-100 rounded">
+                Error loading data: {query_data.error instanceof Error ? query_data.error.message : "Unknown error"}
+              </div>
+            )}
             </div>
         </div>
 

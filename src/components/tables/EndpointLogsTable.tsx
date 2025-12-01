@@ -198,7 +198,7 @@ export function EndpointLogsTable<TData>({ columns, data}: TableProps<TData>) {
 
     const rows = table.getFilteredRowModel().rows;
 
-    exportToCsv(`gameplays_data_${Date.now()}`, headers, rows);
+    exportToCsv(`endpoint_logs_${Date.now()}`, headers, rows);
   };
 return (
     <div className="relative overflow-y-auto max-h-[75vh] min-h-[75vh] border w-full border-gray-700 rounded-lg">
@@ -216,7 +216,7 @@ return (
               {hg.headers.map((header) => (
                 
                 <th key={header.id} colSpan={header.colSpan} style={{ width: header.getSize() }} 
-                 className="overflow-hidden text-ellipsis whitespace-wrap p-2" >                  
+                 className="overflow-hidden text-ellipsis whitespace-wrap p-2 text-center align-middle pt-2" >                  
                   {header.column.getCanFilter() &&
                       string_filterable_columns.includes(header.id as string) && (
                         <div className="flex flex-row h-8 whitespace-wrap mb-2 ">
