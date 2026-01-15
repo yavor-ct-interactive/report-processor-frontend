@@ -290,7 +290,7 @@ export function AbstractTable<TData>({ columns, data, pageSize}: TableProps<TDat
     getExpandedRowModel: getExpandedRowModel(),
   });
   const string_filterable_columns = ['gameplay_id', 'operator', 'operator_endpoint', 'operator_player_id', 'currency', 'game', 'game_start_time'];
-  const number_filterable_columns = ['rgs_total_bet', 'game_denomination', 'win_transaction_amount', 'jp']
+  const number_filterable_columns = ['rgs_total_bet', 'game_denomination', 'win_transaction_amount', 'jp', 'multiplier']
 
   const handleExportToCsv = (): void => {
     const headers = table

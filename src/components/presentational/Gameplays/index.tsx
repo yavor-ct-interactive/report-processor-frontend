@@ -16,6 +16,7 @@ export type GameplayCols = {
     added_at: Date;
     rgs_total_bet: BigInteger;
     game_denomination: BigInteger;
+    multiplier: number;
     setFilter: (operator:any, value:any) => void
 }
 
@@ -123,6 +124,26 @@ export const gameplay_columns = [
           minSize: 120,
           maxSize: 120,
         }),   
+        columnHelper.accessor((row) => {
+          // Logic: Win Amount / Total Bet
+          const win = row.win_transaction_amount || 0;
+          const bet = row.rgs_total_bet || 0;
+          
+          // Prevent division by zero
+          return bet !== 0 ? (win / bet) : 0;
+        }, {
+          id: "multiplier", // 'id' is required when using accessorFn
+          header: "Multiplier",
+          filterFn: advancedFilter, 
+          cell: (info) => {
+            const val = info.getValue();
+            // Optional: Format to 2 decimal places with an 'x' suffix
+            return `${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}x`;
+          },
+          size: 120, 
+          minSize: 120, 
+          maxSize: 120, 
+        }),
         columnHelper.accessor("game_start_time", {
           header: "Game_Start_Time",
           filterFn: (row, columnId, filterValue) => {
