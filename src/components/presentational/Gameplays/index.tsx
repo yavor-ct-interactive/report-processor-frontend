@@ -16,6 +16,7 @@ export type GameplayCols = {
     added_at: Date;
     rgs_total_bet: BigInteger;
     game_denomination: BigInteger;
+    win_transaction_amount: number
     multiplier: number;
     setFilter: (operator:any, value:any) => void
 }
@@ -83,7 +84,6 @@ export const gameplay_columns = [
           size: 200,
           minSize: 200,
           maxSize: 300,
-
         }),
         columnHelper.accessor("rgs_total_bet", {
           header: "TB",
